@@ -1,0 +1,41 @@
+<view class="container">
+  <view class="card">
+    <view class="form-item">
+      <text class="form-label">选择药品 *</text>
+      <picker mode="selector" range="{{medications}}" range-key="name" value="{{form.medicationIndex}}" bindchange="onMedicationChange">
+        <view class="picker">{{form.medicationName || '请选择药品'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">提醒时间 *</text>
+      <picker mode="time" value="{{form.time}}" bindchange="onTimeChange">
+        <view class="picker">{{form.time || '请选择提醒时间'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">重复模式 *</text>
+      <picker mode="selector" range="{{repeatOptions}}" range-key="label" value="{{form.repeatIndex}}" bindchange="onRepeatChange">
+        <view class="picker">{{form.repeatLabel || '请选择重复模式'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">启用提醒</text>
+      <switch checked="{{form.enabled}}" bindchange="onEnabledChange" />
+    </view>
+
+    <view class="form-item subscribe-item">
+      <view class="subscribe-info">
+        <text class="subscribe-label">服药提醒通知</text>
+        <text class="subscribe-desc">保存后将申请订阅消息，到点提醒您吃药</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="btn-container">
+    <button class="btn-cancel" bindtap="handleCancel">取消</button>
+    <button class="btn-save" bindtap="handleSave">保存</button>
+  </view>
+</view>

@@ -1,0 +1,64 @@
+<view class="container">
+  <view class="card">
+    <view class="form-item">
+      <text class="form-label">药品名称 *</text>
+      <view class="input-with-scan">
+        <input class="form-input scan-input" placeholder="请输入药品名称" value="{{form.name}}" bindinput="onInputChange" data-field="name" />
+        <button class="scan-btn" bindtap="scanBarcode">
+          <text class="scan-btn-icon">📷</text>
+        </button>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">剂量 *</text>
+      <input class="form-input" placeholder="例如：每次1片" value="{{form.dosage}}" bindinput="onInputChange" data-field="dosage" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">服用频率 *</text>
+      <picker mode="selector" range="{{frequencyOptions}}" range-key="label" value="{{form.frequencyIndex}}" bindchange="onFrequencyChange">
+        <view class="picker">{{form.frequency || '请选择服用频率'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">开始日期</text>
+      <picker mode="date" value="{{form.startDate}}" bindchange="onStartDateChange">
+        <view class="picker">{{form.startDate || '请选择开始日期'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">结束日期</text>
+      <picker mode="date" value="{{form.endDate}}" bindchange="onEndDateChange">
+        <view class="picker">{{form.endDate || '请选择结束日期'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">药品总量</text>
+      <input class="form-input" type="number" placeholder="例如：30（片/粒）" value="{{form.totalQuantity}}" bindinput="onInputChange" data-field="totalQuantity" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">剩余数量</text>
+      <input class="form-input" type="number" placeholder="当前剩余数量" value="{{form.remainingQuantity}}" bindinput="onInputChange" data-field="remainingQuantity" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">库存预警</text>
+      <input class="form-input" type="number" placeholder="低于此数量时提醒（默认 3）" value="{{form.lowStockWarning}}" bindinput="onInputChange" data-field="lowStockWarning" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">备注</text>
+      <textarea class="form-textarea" placeholder="添加备注信息（可选）" value="{{form.notes}}" bindinput="onInputChange" data-field="notes" />
+    </view>
+  </view>
+
+  <view class="btn-container">
+    <button class="btn-cancel" bindtap="handleCancel">取消</button>
+    <button class="btn-save" bindtap="handleSave">保存</button>
+  </view>
+</view>

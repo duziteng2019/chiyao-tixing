@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- 
+    TabBar Icon: Records Active (记录 - 选中)
+    Primary: #059669
+    Style: Filled with checkmark
+  -->
+  
+  <!-- 外发光 -->
+  <circle cx="24" cy="24" r="18" fill="#059669" opacity="0.1"/>
+  
+  <!-- 文档主体（填充） -->
+  <rect 
+    x="10" 
+    y="8" 
+    width="28" 
+    height="32" 
+    rx="4"
+    fill="#059669"
+    opacity="0.15"
+  />
+  
+  <rect 
+    x="10" 
+    y="8" 
+    width="28" 
+    height="32" 
+    rx="4"
+    stroke="#059669" 
+    stroke-width="2.5" 
+    fill="none"
+  />
+  
+  <!-- 标题栏（填充） -->
+  <rect 
+    x="10" 
+    y="8" 
+    width="28" 
+    height="6" 
+    rx="2"
+    fill="#059669"
+    opacity="0.25"
+  />
+  
+  <!-- 内容行（浅色填充） -->
+  <rect 
+    x="16" 
+    y="20" 
+    width="16" 
+    height="2.5" 
+    rx="1.25"
+    fill="#059669"
+    opacity="0.3"
+  />
+  
+  <rect 
+    x="16" 
+    y="26.5" 
+    width="10" 
+    height="2.5" 
+    rx="1.25"
+    fill="#059669"
+    opacity="0.2"
+  />
+  
+  <rect 
+    x="16" 
+    y="33" 
+    width="13" 
+    height="2.5" 
+    rx="1.25"
+    fill="#059669"
+    opacity="0.2"
+  />
+  
+  <!-- 勾选标记（对勾） -->
+  <circle cx="35" cy="33" r="7" fill="#059669"/>
+  <path 
+    d="M32 33L34.5 35.5L38 31" 
+    stroke="#FFFFFF" 
+    stroke-width="2" 
+    stroke-linecap="round" 
+    stroke-linejoin="round"
+    fill="none"
+  />
+</svg>

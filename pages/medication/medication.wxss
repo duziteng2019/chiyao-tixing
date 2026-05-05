@@ -1,0 +1,655 @@
+/* ========================================
+   药品管理页面 - 现代化UI设计 v2.0
+   设计风格：Material Design 3 + 医疗健康主题
+   ======================================== */
+
+/* 页面容器 */
+.page-container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #F0FDF4 0%, #FFFFFF 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ====== 页面头部 ====== */
+.page-header {
+  background: linear-gradient(135deg, #059669 0%, #10B981 50%, #34D399 100%);
+  padding: 40rpx 32rpx 48rpx;
+  border-radius: 0 0 40rpx 40rpx;
+  box-shadow: 
+    0 4rpx 6rpx -1px rgba(0, 0, 0, 0.1),
+    0 2rpx 4rpx -1px rgba(0, 0, 0, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+.page-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 400rpx;
+  height: 400rpx;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.page-header::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 300rpx;
+  height: 300rpx;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-title-section {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.header-icon {
+  font-size: 56rpx;
+  filter: drop-shadow(0 2rpx 8rpx rgba(0,0,0,0.15));
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.header-title {
+  font-size: 44rpx;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: 2rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.15);
+}
+
+.header-subtitle {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+/* 统计芯片 */
+.stat-chip {
+  padding: 12rpx 24rpx;
+  border-radius: 24rpx;
+  backdrop-filter: blur(10px);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.stat-chip.normal {
+  background: rgba(255, 255, 255, 0.25);
+  border: 2rpx solid rgba(255, 255, 255, 0.4);
+}
+
+.stat-chip.warning {
+  background: rgba(251, 191, 36, 0.3);
+  border: 2rpx solid rgba(251, 191, 36, 0.6);
+  animation: shake 3s ease-in-out infinite;
+}
+
+.stat-chip-text {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2rpx); }
+  75% { transform: translateX(2rpx); }
+}
+
+/* ====== 药品列表 ====== */
+.medication-list {
+  flex: 1;
+  padding: 28rpx;
+  padding-bottom: 160rpx;
+}
+
+.list-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+/* ====== 药品卡片（核心组件）===== */
+.medication-card {
+  display: flex;
+  align-items: stretch;
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  padding: 28rpx 24rpx;
+  box-shadow: 
+    0 2rpx 8rpx rgba(0, 0, 0, 0.04),
+    0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  border: 2rpx solid transparent;
+}
+
+.medication-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  background: linear-gradient(90deg, #059669, #10B981, #34D399);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.medication-card:active {
+  transform: scale(0.98) translateY(2rpx);
+  box-shadow: 
+    0 1rpx 4rpx rgba(0, 0, 0, 0.04),
+    0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.medication-card:active::before,
+.medication-card:hover::before {
+  opacity: 1;
+}
+
+.medication-card.first {
+  animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 卡片左侧：图标区域 */
+.card-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.medicine-icon-wrapper {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(145deg, #059669 0%, #10B981 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 4rpx 12rpx rgba(5, 150, 105, 0.25),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.2);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.medicine-icon-wrapper.low-stock {
+  background: linear-gradient(145deg, #F59E0B 0%, #FBBF24 100%);
+  box-shadow: 
+    0 4rpx 12rpx rgba(245, 158, 11, 0.25),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.2);
+}
+
+.medicine-icon {
+  font-size: 44rpx;
+  color: #FFFFFF;
+  font-weight: 700;
+  text-shadow: 0 2rpx 4rpx rgba(0,0,0,0.15);
+}
+
+/* 库存指示环 */
+.stock-indicator {
+  width: 12rpx;
+  height: 56rpx;
+  background: #E5E7EB;
+  border-radius: 6rpx;
+  overflow: hidden;
+  position: relative;
+}
+
+.stock-ring {
+  width: 100%;
+  height: 100%;
+  background: #E5E7EB;
+  border-radius: 6rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+.stock-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(to top, #059669, #34D399);
+  border-radius: 6rpx;
+  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 卡片中间：信息区域 */
+.card-center {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12rpx;
+  cursor: pointer;
+}
+
+.info-main {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.medicine-name {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.3;
+  letter-spacing: 0.5rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.info-tags {
+  display: flex;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.tag {
+  padding: 6rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.dosage-tag {
+  background: #ECFDF5;
+  color: #059669;
+  border: 1.5rpx solid #A7F3D0;
+}
+
+.frequency-tag {
+  background: #EFF6FF;
+  color: #2563EB;
+  border: 1.5rpx solid #BFDBFE;
+}
+
+.info-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+/* 库存信息行 */
+.stock-info-row {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  flex-wrap: wrap;
+}
+
+.stock-label {
+  font-size: 24rpx;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+.stock-number {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #059669;
+}
+
+.stock-number.low {
+  color: #DC2626;
+  animation: blink-text 1.5s ease-in-out infinite;
+}
+
+@keyframes blink-text {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.stock-separator {
+  font-size: 24rpx;
+  color: #9CA3AF;
+  font-weight: 300;
+}
+
+.stock-total {
+  font-size: 26rpx;
+  color: #6B7280;
+  font-weight: 600;
+}
+
+.stock-badge {
+  padding: 4rpx 14rpx;
+  border-radius: 6rpx;
+  margin-left: 8rpx;
+}
+
+.badge-ok {
+  background: #ECFDF5;
+}
+
+.badge-low {
+  background: #FEF2F2;
+}
+
+.badge-text {
+  font-size: 20rpx;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.badge-ok .badge-text {
+  color: #059669;
+}
+
+.badge-low .badge-text {
+  color: #DC2626;
+}
+
+/* 日期信息 */
+.date-info {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  flex-wrap: wrap;
+}
+
+.date-text {
+  font-size: 22rpx;
+  color: #9CA3AF;
+  font-weight: 500;
+}
+
+.date-separator {
+  font-size: 22rpx;
+  color: #D1D5DB;
+}
+
+/* 卡片右侧：操作按钮 */
+.card-right {
+  display: flex;
+  align-items: center;
+  margin-left: 16rpx;
+  flex-shrink: 0;
+}
+
+.action-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 14rpx 18rpx;
+  border-radius: 16rpx;
+  transition: all 0.2s ease;
+  min-width: 90rpx;
+}
+
+.action-btn:active {
+  transform: scale(0.92);
+}
+
+.edit-btn {
+  background: #F0FDF4;
+  border: 2rpx solid #BBF7D0;
+}
+
+.edit-btn:active {
+  background: #DCFCE7;
+  border-color: #86EFAC;
+}
+
+.delete-btn {
+  background: #FEF2F2;
+  border: 2rpx solid #FECACA;
+}
+
+.delete-btn:active {
+  background: #FEE2E2;
+  border-color: #FCA5A5;
+}
+
+.action-icon {
+  font-size: 32rpx;
+  margin-bottom: 4rpx;
+}
+
+.action-text {
+  font-size: 20rpx;
+  font-weight: 600;
+}
+
+.edit-btn .action-text {
+  color: #059669;
+}
+
+.delete-btn .action-text {
+  color: #DC2626;
+}
+
+/* ====== 空状态 ====== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 60rpx;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.empty-illustration {
+  width: 200rpx;
+  height: 200rpx;
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 40rpx;
+  box-shadow: 
+    0 10rpx 30rpx rgba(5, 150, 105, 0.15),
+    inset 0 -4rpx 12rpx rgba(5, 150, 105, 0.1);
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15rpx); }
+}
+
+.empty-icon-large {
+  font-size: 100rpx;
+  filter: drop-shadow(0 4rpx 12rpx rgba(5, 150, 105, 0.2));
+}
+
+.empty-title {
+  font-size: 38rpx;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 16rpx;
+}
+
+.empty-desc {
+  font-size: 28rpx;
+  color: #6B7280;
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 48rpx;
+}
+
+.empty-action {
+  width: 100%;
+  max-width: 400rpx;
+}
+
+.empty-add-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  box-shadow: 
+    0 8rpx 24rpx rgba(5, 150, 105, 0.35),
+    0 4rpx 12rpx rgba(5, 150, 105, 0.2);
+  transition: all 0.3s ease;
+}
+
+.empty-add-btn:active {
+  transform: scale(0.97) translateY(2rpx);
+  box-shadow: 
+    0 4rpx 12rpx rgba(5, 150, 105, 0.25),
+    0 2rpx 6rpx rgba(5, 150, 105, 0.15);
+}
+
+.btn-plus {
+  font-size: 44rpx;
+  font-weight: 300;
+}
+
+.btn-text {
+  font-size: 32rpx;
+  letter-spacing: 2rpx;
+}
+
+/* ====== 底部浮动按钮 (FAB) ====== */
+.bottom-action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24rpx 32rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 100%);
+  pointer-events: none;
+  z-index: 100;
+}
+
+.fab-button {
+  width: 100%;
+  max-width: 600rpx;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #059669 0%, #10B981 50%, #34D399 100%);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 28rpx;
+  padding: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+  box-shadow: 
+    0 10rpx 30rpx rgba(5, 150, 105, 0.4),
+    0 6rpx 16rpx rgba(5, 150, 105, 0.25),
+    inset 0 2rpx 0 rgba(255, 255, 255, 0.2);
+  pointer-events: auto;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.fab-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+
+.fab-button:active::before {
+  left: 100%;
+}
+
+.fab-button:active {
+  transform: scale(0.97) translateY(4rpx);
+  box-shadow: 
+    0 4rpx 12rpx rgba(5, 150, 105, 0.3),
+    0 2rpx 6rpx rgba(5, 150, 105, 0.15);
+}
+
+.fab-icon-wrap {
+  width: 64rpx;
+  height: 64rpx;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+
+.fab-icon {
+  font-size: 48rpx;
+  font-weight: 300;
+}
+
+.fab-text {
+  letter-spacing: 3rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+}

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- 
+    TabBar Icon: Profile (我的)
+    Style: Outline (未选中状态)
+    Color: #9CA3AF
+  -->
+  
+  <!-- 头像圆圈 -->
+  <circle 
+    cx="24" 
+    cy="17" 
+    r="8"
+    stroke="#9CA3AF" 
+    stroke-width="2" 
+    fill="none"
+  />
+  
+  <!-- 身体轮廓（半圆） -->
+  <path 
+    d="M12 38C12 31.3726 17.3726 26 24 26C30.6274 26 36 31.3726 36 38" 
+    stroke="#9CA3AF" 
+    stroke-width="2" 
+    stroke-linecap="round"
+    fill="none"
+  />
+</svg>

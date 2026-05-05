@@ -1,0 +1,134 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">服药依从性</view>
+    <view class="section-actions">
+      <button class="report-btn" bindtap="toggleReport">📊 周报</button>
+    </view>
+    <view class="stats-grid">
+      <view class="stat-item">
+        <text class="stat-number">{{stats.weeklyRate}}%</text>
+        <text class="stat-label">本周依从性</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{stats.monthlyRate}}%</text>
+        <text class="stat-label">本月依从性</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{stats.streak}}</text>
+        <text class="stat-label">连续服药(天)</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">本周趋势</view>
+    <view class="chart-tabs">
+      <text class="tab-item {{chartMode === 'week' ? 'active' : ''}}" bindtap="switchToWeek">周</text>
+      <text class="tab-item {{chartMode === 'month' ? 'active' : ''}}" bindtap="switchToMonth">月</text>
+    </view>
+    <canvas type="2d" id="chart" class="chart-canvas"></canvas>
+  </view>
+
+  <view class="card">
+    <view class="section-title">最近记录</view>
+    <view class="records-header-bar">
+      <view></view>
+      <button class="catch-up-btn" bindtap="toggleCatchUp">
+        <text class="catch-up-icon">+</text>
+        <text>补录</text>
+      </button>
+    </view>
+
+    <!-- 补录表单 -->
+    <view wx:if="{{showCatchUp}}" class="catch-up-form">
+      <view class="catch-up-field">
+        <text class="catch-up-label">药品</text>
+        <picker mode="selector" range="{{catchUpMedications}}" range-key="name" value="{{catchUpForm.medicationIndex}}" bindchange="onCatchUpMedChange">
+          <view class="catch-up-picker">{{catchUpForm.medicationName || '请选择药品'}}</view>
+        </picker>
+      </view>
+      <view class="catch-up-field">
+        <text class="catch-up-label">日期</text>
+        <picker mode="date" value="{{catchUpForm.date}}" bindchange="onCatchUpDateChange">
+          <view class="catch-up-picker">{{catchUpForm.date || '请选择日期'}}</view>
+        </picker>
+      </view>
+      <view class="catch-up-field">
+        <text class="catch-up-label">时间</text>
+        <picker mode="time" value="{{catchUpForm.time}}" bindchange="onCatchUpTimeChange">
+          <view class="catch-up-picker">{{catchUpForm.time || '请选择时间'}}</view>
+        </picker>
+      </view>
+      <button class="catch-up-save-btn" bindtap="saveCatchUp">保存补录</button>
+    </view>
+
+    <view wx:if="{{recentRecords.length > 0}}">
+      <view wx:for="{{recentRecords}}" wx:key="id" class="record-item">
+        <view class="record-date">{{item.date}}</view>
+        <view class="record-info">
+          <view class="record-medicine">{{item.medicineName}}</view>
+          <view class="record-time">{{item.time}}</view>
+        </view>
+        <view class="record-status {{item.status}}">
+          {{item.status === 'taken' ? '已服' : '漏服'}}
+        </view>
+      </view>
+    </view>
+    <view wx:else class="empty-state">
+      <text class="empty-text">暂无服药记录</text>
+    </view>
+  </view>
+
+  <!-- 周报弹窗 -->
+  <view wx:if="{{showReport && reportData}}" class="report-overlay" catchtap="closeReport">
+    <view class="report-card" catchtap="">
+      <view class="report-header">
+        <text class="report-title">📊 服药周报</text>
+        <text class="report-date">{{reportData.generatedAt}}</text>
+        <button class="report-close" bindtap="closeReport">✕</button>
+      </view>
+
+      <view class="report-body">
+        <view class="report-row">
+          <view class="report-metric">
+            <text class="report-value good">{{reportData.weekRate}}%</text>
+            <text class="report-label">本周依从性</text>
+          </view>
+          <view class="report-metric">
+            <text class="report-value">{{reportData.monthRate}}%</text>
+            <text class="report-label">本月依从性</text>
+          </view>
+          <view class="report-metric">
+            <text class="report-value">{{reportData.weekTaken}}/{{reportData.weekTotal}}</text>
+            <text class="report-label">本周已服</text>
+          </view>
+        </view>
+
+        <view class="report-section">
+          <text class="report-section-title">本周趋势</text>
+          <view class="report-chart">
+            <view wx:for="{{reportData.weekChart}}" wx:key="label" class="report-bar-col">
+              <text class="report-bar-value">{{item.taken > 0 ? item.taken : ''}}</text>
+              <view class="report-bar" style="height: {{item.total > 0 ? (item.taken / reportData.chartMaxTotal) * 120 + 20 : 20}}rpx;"></view>
+              <text class="report-bar-label">{{item.label}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="report-section">
+          <view class="report-highlight">
+            <text class="highlight-icon">🏆</text>
+            <view class="highlight-info">
+              <text class="highlight-title">最常服用的药品</text>
+              <text class="highlight-value">{{reportData.topMed}}（{{reportData.topMedCount}}次）</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="report-footer-text">
+          <text>共记录 {{reportData.totalRecords}} 条服药记录，继续加油！💪</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

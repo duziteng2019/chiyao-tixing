@@ -1,0 +1,118 @@
+<view class="profile-page">
+  <!-- 个人资料卡片 -->
+  <view class="card profile-card">
+    <block wx:if="{{!isEditing}}">
+      <view class="user-info">
+        <view class="user-avatar-wrapper">
+          <image wx:if="{{userInfo.avatarUrl}}" class="user-avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+          <view wx:else class="user-avatar-placeholder">
+            <text class="avatar-placeholder-icon">👤</text>
+          </view>
+        </view>
+        <view class="user-detail">
+          <text class="user-name">{{userInfo.nickName || '用户'}}</text>
+          <text class="user-status">{{syncOnline ? '已同步' : '本地模式'}}</text>
+        </view>
+        <button class="edit-btn" bindtap="toggleEdit">编辑</button>
+      </view>
+    </block>
+
+    <block wx:else>
+      <view class="edit-layout">
+        <view class="edit-avatar-section">
+          <button class="edit-avatar-btn" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+            <image wx:if="{{editAvatar}}" class="edit-avatar-img" src="{{editAvatar}}" mode="aspectFill"></image>
+            <view wx:else class="edit-avatar-placeholder">
+              <text class="avatar-placeholder-icon">👤</text>
+            </view>
+            <view class="avatar-camera-badge">📷</view>
+          </button>
+        </view>
+        <input class="edit-nick-input" type="nickname" placeholder="输入昵称" value="{{editNickname}}" bindinput="onInputNickname" maxlength="20" />
+        <view class="edit-actions">
+          <button class="edit-cancel-btn" bindtap="toggleEdit">取消</button>
+          <button class="edit-save-btn" bindtap="saveProfile">保存</button>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 统计数据 -->
+  <view class="card stats-card">
+    <view class="stats">
+      <view class="stat">
+        <text class="stat-value">{{stats.todayCount || 0}}</text>
+        <text class="stat-label">今日提醒</text>
+      </view>
+      <view class="divider"></view>
+      <view class="stat">
+        <text class="stat-value">{{stats.takenCount || 0}}</text>
+        <text class="stat-label">已完成</text>
+      </view>
+      <view class="divider"></view>
+      <view class="stat">
+        <text class="stat-value green">{{stats.compliance || 0}}%</text>
+        <text class="stat-label">准时率</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 成就徽章 -->
+  <view class="card achievements-card">
+    <view class="achievements-header">
+      <text class="achievements-title">成就徽章</text>
+      <text class="achievements-streak">🔥 {{streak}} 天</text>
+    </view>
+    <view class="achievements-grid">
+      <view wx:for="{{achievements}}" wx:key="days" class="achievement-item {{item.unlocked ? 'unlocked' : 'locked'}}">
+        <view class="achievement-badge" style="border-color: {{item.unlocked ? item.color : '#E5E7EB'}}; {{item.unlocked ? 'background:' + item.color : ''}}">
+          <text class="achievement-icon {{item.unlocked ? '' : 'grayscale'}}">{{item.unlocked ? item.icon : '🔒'}}</text>
+        </view>
+        <text class="achievement-title">{{item.title}}</text>
+        <text class="achievement-desc">{{item.unlocked ? item.desc : (item.days + '天目标')}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 菜单 -->
+  <view class="card menu-card">
+    <view class="menu-item" bindtap="goToReminders">
+      <text class="menu-icon">🔔</text>
+      <view class="menu-content">
+        <text class="menu-title">提醒设置</text>
+        <text class="menu-desc">管理服药提醒时间和频率</text>
+      </view>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="triggerSync">
+      <text class="menu-icon">{{isSyncing ? '⏳' : '🔄'}}</text>
+      <view class="menu-content">
+        <text class="menu-title">数据同步</text>
+        <text class="menu-desc">{{syncStatusText}}</text>
+      </view>
+      <view class="status-dot {{syncOnline ? 'online' : 'offline'}}"></view>
+    </view>
+    <view class="menu-item" bindtap="goToHelp">
+      <text class="menu-icon">❓</text>
+      <view class="menu-content">
+        <text class="menu-title">使用帮助</text>
+        <text class="menu-desc">查看使用指南和常见问题</text>
+      </view>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="goToAbout">
+      <text class="menu-icon">ℹ️</text>
+      <view class="menu-content">
+        <text class="menu-title">关于我们</text>
+        <text class="menu-desc">版本信息和开发者致谢</text>
+      </view>
+      <text class="menu-version">v1.0</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+
+  <view class="footer">
+    <text class="footer-title">吃药提醒 - 守护您的健康</text>
+    <text class="footer-sub">Made with ❤️ for better health</text>
+  </view>
+</view>

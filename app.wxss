@@ -1,0 +1,249 @@
+/* ====================================
+   设计令牌 / Design Tokens
+   ==================================== */
+page {
+  /* ---- 主色 ---- */
+  --color-primary: #059669;
+  --color-primary-light: #10B981;
+  --color-primary-dark: #047857;
+  --color-primary-bg: #F0FDF4;
+  --color-primary-border: #D1FAE5;
+
+  /* ---- 辅助色 ---- */
+  --color-accent: #0891B2;
+  --color-accent-light: #22D3EE;
+
+  /* ---- 语义色 ---- */
+  --color-danger: #EF4444;
+  --color-danger-bg: #FEF2F2;
+  --color-danger-border: #FECACA;
+  --color-warning: #D97706;
+  --color-warning-bg: #FFFBEB;
+  --color-warning-border: #FDE68A;
+
+  /* ---- 文字 ---- */
+  --color-text-primary: #111827;
+  --color-text-secondary: #6B7280;
+  --color-text-muted: #6B7280;
+  --color-text-white: #FFFFFF;
+  --color-placeholder: rgba(255, 255, 255, 0.8);
+
+  /* ---- 背景 & 边框 ---- */
+  --color-bg-page: #F0FDF4;
+  --color-bg-card: #FFFFFF;
+  --color-bg-input: #F9FAFB;
+  --color-border: #E5E7EB;
+  --color-border-light: #F3F4F6;
+
+  /* ---- 间距 ---- */
+  --space-xs: 8rpx;
+  --space-sm: 16rpx;
+  --space-md: 24rpx;
+  --space-lg: 32rpx;
+  --space-xl: 48rpx;
+
+  /* ---- 卡片规范 ---- */
+  --card-padding: var(--space-lg);
+  --card-spacing: var(--space-md);
+  --card-radius: var(--radius-xl);
+
+  /* ---- 圆角 ---- */
+  --radius-sm: 12rpx;
+  --radius-md: 16rpx;
+  --radius-lg: 20rpx;
+  --radius-xl: 24rpx;
+  --radius-2xl: 28rpx;
+  --radius-full: 48rpx;
+
+  /* ---- 字号 ---- */
+  --text-xs: 22rpx;
+  --text-sm: 24rpx;
+  --text-base: 28rpx;
+  --text-md: 30rpx;
+  --text-lg: 34rpx;
+  --text-xl: 38rpx;
+
+  /* ---- 阴影 ---- */
+  --shadow-1: 0 2rpx 4rpx rgba(0, 0, 0, 0.04);
+  --shadow-2: 0 4rpx 12rpx rgba(0, 0, 0, 0.06);
+  --shadow-3: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
+  --shadow-sm: var(--shadow-1);
+  --shadow-md: var(--shadow-2);
+  --shadow-lg: var(--shadow-3);
+  --shadow-xl: 0 12rpx 40rpx rgba(5, 150, 105, 0.3);
+  --shadow-danger: 0 6rpx 24rpx rgba(239, 68, 68, 0.25);
+  --shadow-card: var(--shadow-2);
+  --shadow-fab: var(--shadow-3);
+
+  /* ---- 渐变 ---- */
+  --gradient-primary: linear-gradient(135deg, #059669 0%, #10B981 100%);
+  --gradient-primary-long: linear-gradient(135deg, #059669 0%, #10B981 50%, #34D399 100%);
+  --gradient-primary-soft: linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 100%);
+  --gradient-accent: linear-gradient(135deg, #0891B2 0%, #22D3EE 100%);
+
+  /* ---- 基础 ---- */
+  background: var(--color-bg-page);
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  min-height: 100vh;
+  color: var(--color-text-primary);
+}
+
+/* ====================================
+   通用工具类
+   ==================================== */
+
+.container {
+  padding: var(--space-md);
+}
+
+/* Card */
+.card {
+  background: var(--color-bg-card);
+  border-radius: var(--card-radius);
+  padding: var(--card-padding);
+  margin-bottom: var(--card-spacing);
+  box-shadow: var(--shadow-card);
+  transition: all 0.3s ease;
+}
+
+/* Section Title */
+.section-title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-md);
+  position: relative;
+  padding-left: 20rpx;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6rpx;
+  height: 32rpx;
+  background: var(--gradient-primary);
+  border-radius: 3rpx;
+}
+
+/* Buttons */
+.btn-primary {
+  background: var(--gradient-primary);
+  color: var(--color-text-white);
+  border-radius: var(--radius-full);
+  padding: var(--space-md) var(--space-xl);
+  font-size: var(--text-md);
+  border: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  background: var(--color-bg-card);
+  color: #374151;
+  border-radius: var(--radius-full);
+  padding: var(--space-md) var(--space-xl);
+  font-size: var(--text-md);
+  border: 2rpx solid var(--color-border);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:active {
+  background: #F9FAFB;
+  border-color: #D1D5DB;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-take {
+  background: var(--color-primary);
+  color: var(--color-text-white);
+  border-radius: var(--radius-lg);
+  padding: 12rpx 28rpx;
+  font-size: var(--text-sm);
+  border: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-take:active {
+  background: var(--color-primary-dark);
+  transform: scale(0.95);
+}
+
+.btn-take:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Form Elements */
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 28rpx;
+  background: var(--color-bg-input);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  border: 2rpx solid var(--color-border);
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: var(--color-primary-light);
+  background: var(--color-bg-card);
+  box-shadow: 0 0 0 6rpx rgba(16, 185, 129, 0.1);
+}
+
+.form-textarea {
+  min-height: 160rpx;
+  line-height: 1.5;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 100rpx 0;
+}
+
+.empty-text {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+/* Text Utilities */
+.text-primary { color: var(--color-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-muted { color: var(--color-text-muted); }
+.text-danger { color: var(--color-danger); }
+
+/* Layout Utilities */
+.flex { display: flex; }
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.mt-20 { margin-top: 20rpx; }
+.mb-20 { margin-bottom: 20rpx; }

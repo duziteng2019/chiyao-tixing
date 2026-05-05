@@ -1,0 +1,76 @@
+<view class="container">
+  <view class="hero-section">
+    <view class="app-logo">
+      <text class="logo-icon">💊</text>
+    </view>
+    <view class="app-name">{{appInfo.name}}</view>
+    <view class="app-slogan">{{appInfo.slogan}}</view>
+    <view class="version-tag">v{{appInfo.version}}</view>
+  </view>
+
+  <view class="intro-card">
+    <text class="intro-text">{{appInfo.description}}</text>
+  </view>
+
+  <view class="features-section">
+    <view class="section-title">核心功能</view>
+    <view class="features-grid">
+      <view wx:for="{{features}}" wx:key="title" class="feature-item">
+        <view class="feature-icon-wrapper">
+          <text class="feature-icon">{{item.iconChar}}</text>
+        </view>
+        <text class="feature-title">{{item.title}}</text>
+        <text class="feature-desc">{{item.desc}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="info-section">
+    <view class="info-item" bindtap="checkUpdate">
+      <view class="info-left">
+        <text class="info-label">检查更新</text>
+      </view>
+      <view class="info-right">
+        <text class="info-value">v{{appInfo.version}}</text>
+        <view class="arrow">›</view>
+      </view>
+    </view>
+
+    <view class="info-item" bindtap="viewPrivacy">
+      <view class="info-left">
+        <text class="info-label">隐私政策</text>
+      </view>
+      <view class="info-right">
+        <view class="arrow">›</view>
+      </view>
+    </view>
+
+    <view class="info-item" bindtap="viewTerms">
+      <view class="info-left">
+        <text class="info-label">使用条款</text>
+      </view>
+      <view class="info-right">
+        <view class="arrow">›</view>
+      </view>
+    </view>
+
+    <view class="info-item" bindtap="copyEmail">
+      <view class="info-left">
+        <text class="info-label">联系我们</text>
+      </view>
+      <view class="info-right">
+        <text class="info-value email">{{teamInfo.email}}</text>
+        <view class="arrow">›</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="team-section">
+    <view class="team-name">{{teamInfo.name}}</view>
+    <view class="team-mission">{{teamInfo.mission}}</view>
+  </view>
+
+  <view class="footer">
+    <text class="copyright">© 2024 吃药提醒 All Rights Reserved</text>
+  </view>
+</view>

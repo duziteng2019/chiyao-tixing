@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- 
+    TabBar Icon: Profile Active (我的 - 选中)
+    Primary: #059669
+    Style: Filled with glow effect
+  -->
+  
+  <!-- 外发光效果 -->
+  <circle cx="24" cy="24" r="20" fill="#059669" opacity="0.08"/>
+  
+  <!-- 头像圆圈（填充） -->
+  <circle 
+    cx="24" 
+    cy="17" 
+    r="8"
+    fill="#059669"
+    opacity="0.9"
+  />
+  
+  <!-- 头像高光 -->
+  <circle 
+    cx="21" 
+    cy="14" 
+    r="3" 
+    fill="#FFFFFF" 
+    opacity="0.4"
+  />
+  
+  <!-- 头像轮廓 -->
+  <circle 
+    cx="24" 
+    cy="17" 
+    r="8"
+    stroke="#059669" 
+    stroke-width="2" 
+    fill="none"
+  />
+  
+  <!-- 身体轮廓（填充） -->
+  <path 
+    d="M12 38C12 31.3726 17.3726 26 24 26C30.6274 26 36 31.3726 36 38" 
+    fill="#059669"
+    opacity="0.15"
+  />
+  
+  <path 
+    d="M12 38C12 31.3726 17.3726 26 24 26C30.6274 26 36 31.3726 36 38" 
+    stroke="#059669" 
+    stroke-width="2.5" 
+    stroke-linecap="round"
+    fill="none"
+  />
+</svg>

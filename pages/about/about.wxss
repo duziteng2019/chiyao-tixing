@@ -1,0 +1,217 @@
+.container {
+  min-height: 100vh;
+  background: #f5f7fa;
+  padding-bottom: 60rpx;
+}
+
+.hero-section {
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  padding: 80rpx 40rpx 60rpx;
+  text-align: center;
+  border-radius: 0 0 48rpx 48rpx;
+}
+
+.app-logo {
+  width: 160rpx;
+  height: 160rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 28rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
+}
+
+.logo-icon {
+  font-size: 80rpx;
+  line-height: 1;
+}
+
+.app-name {
+  font-size: 52rpx;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 12rpx;
+  letter-spacing: 4rpx;
+}
+
+.app-slogan {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 20rpx;
+}
+
+.version-tag {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 24rpx;
+  padding: 8rpx 28rpx;
+  border-radius: 24rpx;
+  font-weight: 500;
+}
+
+.intro-card {
+  margin: -30rpx 30rpx 30rpx;
+  background: #fff;
+  padding: 36rpx 32rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 10;
+}
+
+.intro-text {
+  font-size: 28rpx;
+  line-height: 1.8;
+  color: #666;
+  text-align: center;
+}
+
+.features-section {
+  margin: 0 30rpx 30rpx;
+  background: #fff;
+  padding: 36rpx 32rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 28rpx;
+  text-align: center;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24rpx;
+}
+
+.feature-item {
+  text-align: center;
+  padding: 28rpx 16rpx;
+  background: #f9f9f9;
+  border-radius: 16rpx;
+}
+
+.feature-icon-wrapper {
+  width: 88rpx;
+  height: 88rpx;
+  background: linear-gradient(135deg, #4CAF50 0%, #81C784 100%);
+  border-radius: 22rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16rpx;
+}
+
+.feature-icon {
+  font-size: 44rpx;
+  line-height: 1;
+}
+
+.feature-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.feature-desc {
+  display: block;
+  font-size: 24rpx;
+  color: #999;
+}
+
+.info-section {
+  margin: 0 30rpx 30rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx 28rpx;
+  border-bottom: 2rpx solid #f5f5f5;
+  transition: background 0.2s ease;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-item:active {
+  background: #fafafa;
+}
+
+.info-left {
+  flex: 1;
+}
+
+.info-label {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.info-right {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.info-value {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.info-value.email {
+  color: #4CAF50;
+}
+
+.arrow {
+  font-size: 36rpx;
+  color: #ccc;
+  font-weight: 300;
+}
+
+.team-section {
+  text-align: center;
+  margin: 40rpx 30rpx;
+  padding: 32rpx;
+  background: #fff;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+
+.team-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 12rpx;
+}
+
+.team-mission {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+.footer {
+  text-align: center;
+  padding: 40rpx 20rpx 20rpx;
+}
+
+.copyright {
+  font-size: 24rpx;
+  color: #999;
+}

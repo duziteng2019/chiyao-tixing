@@ -1,0 +1,30 @@
+{
+  "envId": "cloudbase-d5g760x9h5cd4938d",
+  "version": "2.0",
+  "$schema": "https://framework-1258016615.tcloudbaseapp.com/schema/latest.json",
+  "functionRoot": "./cloudfunctions",
+  "functions": [
+    {
+      "name": "login",
+      "timeout": 10,
+      "runtime": "Node.js 16",
+      "handler": "index.main",
+      "installDependency": true,
+      "envVariables": {}
+    },
+    {
+      "name": "sendReminder",
+      "timeout": 15,
+      "runtime": "Node.js 16",
+      "handler": "index.main",
+      "installDependency": true,
+      "envVariables": {}
+    }
+  ],
+  "database": {
+    "permissions": {
+      "read": true,
+      "write": true
+    }
+  }
+}

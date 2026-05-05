@@ -1,0 +1,142 @@
+.reminder-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  transition: all 0.3s ease;
+  border-radius: 16rpx;
+  margin: 8rpx 0;
+  background: white;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.reminder-item:hover {
+  transform: translateY(-2rpx);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  background: #f8f9fa;
+}
+
+.reminder-item:last-child {
+  border-bottom: none;
+}
+
+.reminder-info {
+  flex: 1;
+}
+
+.reminder-medicine {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8rpx;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.reminder-detail {
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.4;
+}
+
+.reminder-actions {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex-shrink: 0;
+}
+
+/* 开关样式 */
+switch {
+  transform: scale(1.2);
+  margin-right: 12rpx;
+}
+
+.action-btn-small {
+  padding: 12rpx 24rpx;
+  font-size: 24rpx;
+  border-radius: 20rpx;
+  border: none;
+  background: #f8f9fa;
+  color: #333;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.action-btn-small:hover {
+  background: #e9ecef;
+  transform: translateY(-2rpx);
+}
+
+.action-btn-small.delete {
+  background: #FFEBEE;
+  color: #F44336;
+}
+
+.action-btn-small.delete:hover {
+  background: #FFCDD2;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 120rpx 0;
+  background: #f8f9fa;
+  border-radius: 20rpx;
+  margin: 40rpx 0;
+}
+
+.empty-text {
+  color: #666;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.add-btn-container {
+  margin-top: 32rpx;
+  margin-bottom: 40rpx;
+}
+
+.add-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  border-radius: 50rpx;
+  padding: 32rpx;
+  font-size: 32rpx;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 8rpx 24rpx rgba(76, 175, 80, 0.3);
+}
+
+.add-btn:hover {
+  transform: translateY(-4rpx);
+  box-shadow: 0 12rpx 32rpx rgba(76, 175, 80, 0.4);
+}
+
+.add-icon {
+  font-size: 48rpx;
+  margin-right: 16rpx;
+  animation: pulse 2s infinite;
+}
+
+/* 响应式调整 */
+@media (max-width: 375px) {
+  .reminder-medicine {
+    font-size: 28rpx;
+  }
+  
+  switch {
+    transform: scale(1);
+  }
+  
+  .add-btn {
+    padding: 28rpx;
+  }
+}

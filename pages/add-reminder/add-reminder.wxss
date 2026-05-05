@@ -1,0 +1,116 @@
+.form-item {
+  margin-bottom: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 28rpx;
+  background: #FFFFFF;
+  border-radius: 18rpx;
+  border: 2rpx solid #F3F4F6;
+  transition: all 0.2s ease;
+}
+
+.form-item:active {
+  border-color: #D1FAE5;
+}
+
+.form-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #374151;
+  flex-shrink: 0;
+  padding-left: 12rpx;
+  border-left: 4rpx solid #059669;
+}
+
+.picker {
+  flex: 1;
+  margin-left: 20rpx;
+  padding: 20rpx 24rpx;
+  background: #F9FAFB;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: #111827;
+  text-align: right;
+  border: 2rpx solid #E5E7EB;
+  transition: all 0.2s ease;
+}
+
+.picker:active {
+  border-color: #10B981;
+  background: #FFFFFF;
+}
+
+switch {
+  transform: scale(1.1);
+  margin-left: 20rpx;
+}
+
+/* Subscribe */
+.subscribe-item {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6rpx;
+  background: #F0FDF4;
+  border-color: #D1FAE5;
+}
+
+.subscribe-info {
+  width: 100%;
+}
+
+.subscribe-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #065F46;
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+.subscribe-desc {
+  font-size: 22rpx;
+  color: #6B7280;
+}
+
+/* Buttons */
+.btn-container {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 48rpx;
+  margin-bottom: 40rpx;
+}
+
+.btn-cancel {
+  flex: 1;
+  background: #FFFFFF;
+  color: #374151;
+  border-radius: 48rpx;
+  padding: 30rpx;
+  font-size: 30rpx;
+  border: 2rpx solid #E5E7EB;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:active {
+  background: #F9FAFB;
+  border-color: #D1D5DB;
+}
+
+.btn-save {
+  flex: 1;
+  background: linear-gradient(135deg, #059669 0%, #10B981 100%);
+  color: #FFFFFF;
+  border-radius: 48rpx;
+  padding: 30rpx;
+  font-size: 30rpx;
+  border: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 6rpx 24rpx rgba(5, 150, 105, 0.25);
+}
+
+.btn-save:active {
+  transform: scale(0.97);
+  box-shadow: 0 3rpx 12rpx rgba(5, 150, 105, 0.15);
+}

@@ -1,0 +1,31 @@
+<view class="container">
+  <view class="header">
+    <view class="header-title">使用帮助</view>
+    <view class="header-subtitle">常见问题与操作指南</view>
+  </view>
+
+  <view class="help-list">
+    <view wx:for="{{helpItems}}" wx:key="title" class="help-item {{expandedIndex === index ? 'expanded' : ''}}" bindtap="toggleItem" data-index="{{index}}">
+      <view class="help-header">
+        <view class="help-icon-wrapper">
+          <text class="help-icon">{{item.iconChar}}</text>
+        </view>
+        <text class="help-title">{{item.title}}</text>
+        <view class="expand-icon {{expandedIndex === index ? 'rotated' : ''}}">›</view>
+      </view>
+      <view class="help-content" wx:if="{{expandedIndex === index}}">
+        <text class="help-text">{{item.content}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="support-section">
+    <button class="support-btn" bindtap="contactSupport">
+      联系客服
+    </button>
+  </view>
+
+  <view class="footer">
+    <text class="footer-text">版本 1.0.0</text>
+  </view>
+</view>

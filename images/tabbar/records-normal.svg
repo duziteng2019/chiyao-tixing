@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- 
+    TabBar Icon: Records (记录)
+    Style: Outline (未选中状态)
+    Color: #9CA3AF
+  -->
+  
+  <!-- 文档/列表主体 -->
+  <rect 
+    x="10" 
+    y="8" 
+    width="28" 
+    height="32" 
+    rx="4"
+    stroke="#9CA3AF" 
+    stroke-width="2" 
+    fill="none"
+  />
+  
+  <!-- 顶部标题栏 -->
+  <line 
+    x1="10" 
+    y1="14" 
+    x2="38" 
+    y2="14" 
+    stroke="#9CA3AF" 
+    stroke-width="2"
+  />
+  
+  <!-- 内容行1 -->
+  <line 
+    x1="16" 
+    y1="22" 
+    x2="32" 
+    y2="22" 
+    stroke="#9CA3AF" 
+    stroke-width="2" 
+    stroke-linecap="round"
+  />
+  
+  <!-- 内容行2 -->
+  <line 
+    x1="16" 
+    y1="28" 
+    x2="26" 
+    y2="28" 
+    stroke="#9CA3AF" 
+    stroke-width="2" 
+    stroke-linecap="round"
+  />
+  
+  <!-- 内容行3（短） -->
+  <line 
+    x1="16" 
+    y1="34" 
+    x2="29" 
+    y2="34" 
+    stroke="#9CA3AF" 
+    stroke-width="2" 
+    stroke-linecap="round"
+  />
+</svg>
