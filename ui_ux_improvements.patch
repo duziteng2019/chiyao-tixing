@@ -1,0 +1,894 @@
+From 17e0e3f1de60459f991a238ed286e4549f2da8b2 Mon Sep 17 00:00:00 2001
+From: duziteng2019 <duziteng2019@users.noreply.github.com>
+Date: Wed, 6 May 2026 00:06:58 +0000
+Subject: [PATCH] =?UTF-8?q?feat:=20UI/UX=20=E9=A1=B5=E9=9D=A2=E6=94=B9?=
+ =?UTF-8?q?=E8=BF=9B=E5=BB=BA=E8=AE=AE?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Co-authored-by: traeagent <traeagent@users.noreply.github.com>
+---
+ app.wxss                         |  37 ++++++++-
+ pages/index/index.wxml           |  38 ++++++---
+ pages/index/index.wxss           | 131 +++++++++++++++++++++++++++----
+ pages/medication/medication.wxml |  28 ++++---
+ pages/medication/medication.wxss |  80 ++++++++++++++++---
+ pages/profile/profile.wxml       |  44 +++++++----
+ pages/profile/profile.wxss       |  68 ++++++++++++----
+ 7 files changed, 339 insertions(+), 87 deletions(-)
+
+diff --git a/app.wxss b/app.wxss
+index 03cc73c..f4d422b 100644
+--- a/app.wxss
++++ b/app.wxss
+@@ -20,11 +20,14 @@ page {
+   --color-warning: #D97706;
+   --color-warning-bg: #FFFBEB;
+   --color-warning-border: #FDE68A;
++  --color-success: #059669;
++  --color-success-bg: #F0FDF4;
++  --color-success-border: #D1FAE5;
+ 
+   /* ---- 文字 ---- */
+   --color-text-primary: #111827;
+   --color-text-secondary: #6B7280;
+-  --color-text-muted: #6B7280;
++  --color-text-muted: #9CA3AF;
+   --color-text-white: #FFFFFF;
+   --color-placeholder: rgba(255, 255, 255, 0.8);
+ 
+@@ -80,12 +83,14 @@ page {
+   --gradient-primary-long: linear-gradient(135deg, #059669 0%, #10B981 50%, #34D399 100%);
+   --gradient-primary-soft: linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 100%);
+   --gradient-accent: linear-gradient(135deg, #0891B2 0%, #22D3EE 100%);
++  --gradient-warning: linear-gradient(135deg, #F59E0B 0%, #F97316 100%);
+ 
+   /* ---- 基础 ---- */
+   background: var(--color-bg-page);
+   font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+   min-height: 100vh;
+   color: var(--color-text-primary);
++  line-height: 1.6;
+ }
+ 
+ /* ====================================
+@@ -103,7 +108,12 @@ page {
+   padding: var(--card-padding);
+   margin-bottom: var(--card-spacing);
+   box-shadow: var(--shadow-card);
+-  transition: all 0.3s ease;
++  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
++}
++
++.card:hover {
++  box-shadow: var(--shadow-md);
++  transform: translateY(-2rpx);
+ }
+ 
+ /* Section Title */
+@@ -137,8 +147,25 @@ page {
+   font-size: var(--text-md);
+   border: none;
+   font-weight: 600;
+-  transition: all 0.3s ease;
++  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+   box-shadow: var(--shadow-lg);
++  position: relative;
++  overflow: hidden;
++}
++
++.btn-primary::after {
++  border: none;
++}
++
++.btn-primary::before {
++  content: '';
++  position: absolute;
++  top: 0;
++  left: -100%;
++  width: 100%;
++  height: 100%;
++  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
++  transition: left 0.5s ease;
+ }
+ 
+ .btn-primary:active {
+@@ -146,6 +173,10 @@ page {
+   box-shadow: var(--shadow-sm);
+ }
+ 
++.btn-primary:active::before {
++  left: 100%;
++}
++
+ .btn-primary:disabled {
+   opacity: 0.5;
+   cursor: not-allowed;
+diff --git a/pages/index/index.wxml b/pages/index/index.wxml
+index d856477..c33eb2c 100644
+--- a/pages/index/index.wxml
++++ b/pages/index/index.wxml
+@@ -29,7 +29,10 @@
+         </view>
+         <view class="reminder-status">
+           <button wx:if="{{!item.taken}}" class="btn-take" bindtap="markAsTaken" data-id="{{item.id}}">已服用</button>
+-          <text wx:else class="status-taken">已服</text>
++          <view wx:else class="status-taken">
++            <image class="check-icon" src="/images/icons/check.svg"></image>
++            <text>已服</text>
++          </view>
+         </view>
+       </view>
+     </view>
+@@ -39,17 +42,23 @@
+   </view>
+ 
+   <view class="streak-banner" wx:if="{{stats.streak > 0}}" bindtap="goToMedication">
+-    <text class="streak-icon">🔥</text>
++    <view class="streak-icon-wrapper">
++      <text class="streak-flame">🔥</text>
++    </view>
+     <view class="streak-info">
+       <text class="streak-count">连续服药 {{stats.streak}} 天</text>
+       <text class="streak-hint">继续保持！</text>
+     </view>
+-    <text class="streak-arrow">›</text>
++    <view class="streak-arrow-wrapper">
++      <text class="streak-arrow">›</text>
++    </view>
+   </view>
+ 
+   <view class="card stock-warning-card" wx:if="{{lowStockMedications.length > 0}}" bindtap="goToMedication">
+     <view class="stock-warning-header">
+-      <text class="stock-warning-icon">⚠️</text>
++      <view class="stock-warning-icon-wrapper">
++        <text class="warning-symbol">⚠️</text>
++      </view>
+       <text class="stock-warning-title">{{lowStockMedications.length}} 种药品即将用完</text>
+     </view>
+     <view class="stock-warning-list">
+@@ -80,33 +89,38 @@
+ 
+   <view class="quick-actions">
+     <button class="action-btn" bindtap="goToAddMedication">
+-      <text class="action-icon">+</text>
++      <view class="action-icon-wrapper">
++        <text class="action-icon-plus">+</text>
++      </view>
+       <text class="action-btn-text">添加药品</text>
+     </button>
+     <button class="action-btn action-btn-secondary" bindtap="goToAddReminder">
+-      <text class="action-icon">&</text>
++      <view class="action-icon-wrapper">
++        <image class="bell-icon" src="/images/icons/bell.svg"></image>
++      </view>
+       <text class="action-btn-text">设置提醒</text>
+     </button>
+   </view>
+   </view>
+ 
+-  <!-- 新手引导 -->
+   <view wx:if="{{showGuide}}" class="guide-overlay">
+     <view class="guide-card">
+-      <view class="guide-icon">👋</view>
++      <view class="guide-icon-wrapper">
++        <text class="guide-wave">👋</text>
++      </view>
+       <text class="guide-title">欢迎使用吃药提醒</text>
+-      <text class="guide-desc">轻松管理药品信息，设置服药提醒，追踪你的健康数据</text>
++      <text class="guide-desc">轻松管理药品信息，设置服药提醒，追踪您的健康数据</text>
+       <view class="guide-steps">
+         <view class="guide-step">
+-          <text class="guide-step-num">1</text>
++          <view class="guide-step-num">{{1}}</view>
+           <text class="guide-step-text">添加你的药品信息</text>
+         </view>
+         <view class="guide-step">
+-          <text class="guide-step-num">2</text>
++          <view class="guide-step-num">{{2}}</view>
+           <text class="guide-step-text">为药品设置服药提醒</text>
+         </view>
+         <view class="guide-step">
+-          <text class="guide-step-num">3</text>
++          <view class="guide-step-num">{{3}}</view>
+           <text class="guide-step-text">收到提醒，按时服药</text>
+         </view>
+       </view>
+diff --git a/pages/index/index.wxss b/pages/index/index.wxss
+index 40fbb68..a50f394 100644
+--- a/pages/index/index.wxss
++++ b/pages/index/index.wxss
+@@ -168,6 +168,9 @@
+ }
+ 
+ .status-taken {
++  display: flex;
++  align-items: center;
++  gap: 8rpx;
+   color: var(--color-primary);
+   font-size: var(--text-sm);
+   background: var(--color-primary-bg);
+@@ -177,6 +180,11 @@
+   white-space: nowrap;
+ }
+ 
++.check-icon {
++  width: 32rpx;
++  height: 32rpx;
++}
++
+ /* Stats Grid */
+ .stats-grid {
+   display: flex;
+@@ -221,10 +229,27 @@
+   box-shadow: 0 8rpx 24rpx rgba(245, 158, 11, 0.3);
+ }
+ 
+-.streak-icon {
+-  font-size: 48rpx;
+-  margin-right: 20rpx;
++.streak-icon-wrapper {
+   flex-shrink: 0;
++  margin-right: 20rpx;
++  width: 64rpx;
++  height: 64rpx;
++  background: rgba(255, 255, 255, 0.25);
++  border-radius: 50%;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  backdrop-filter: blur(10px);
++}
++
++.streak-flame {
++  font-size: 36rpx;
++  animation: pulse-flame 1.5s ease-in-out infinite;
++}
++
++@keyframes pulse-flame {
++  0%, 100% { transform: scale(1); }
++  50% { transform: scale(1.1); }
+ }
+ 
+ .streak-info {
+@@ -244,10 +269,27 @@
+   color: rgba(255, 255, 255, 0.8);
+ }
+ 
+-.streak-arrow {
+-  font-size: 40rpx;
+-  color: rgba(255, 255, 255, 0.7);
++.streak-arrow-wrapper {
++  width: 48rpx;
++  height: 48rpx;
++  background: rgba(255, 255, 255, 0.2);
++  border-radius: 50%;
++  display: flex;
++  align-items: center;
++  justify-content: center;
+   flex-shrink: 0;
++  transition: all 0.2s ease;
++}
++
++.streak-arrow {
++  font-size: 28rpx;
++  color: rgba(255, 255, 255, 0.9);
++  line-height: 1;
++}
++
++.streak-banner:active .streak-arrow-wrapper {
++  transform: translateX(4rpx);
++  background: rgba(255, 255, 255, 0.3);
+ }
+ 
+ /* Stock Warning Card */
+@@ -263,9 +305,21 @@
+   margin-bottom: var(--space-sm);
+ }
+ 
+-.stock-warning-icon {
+-  font-size: 32rpx;
++.stock-warning-icon-wrapper {
++  width: 56rpx;
++  height: 56rpx;
++  background: rgba(217, 119, 6, 0.15);
++  border-radius: 50%;
++  display: flex;
++  align-items: center;
++  justify-content: center;
+   margin-right: 12rpx;
++  flex-shrink: 0;
++}
++
++.warning-symbol {
++  font-size: 28rpx;
++  line-height: 1;
+ }
+ 
+ .stock-warning-title {
+@@ -323,13 +377,19 @@
+   border-radius: var(--radius-xl);
+   border: none;
+   box-shadow: var(--shadow-lg);
+-  transition: all 0.2s ease;
++  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+   color: var(--color-text-white);
+   box-sizing: border-box;
++  overflow: hidden;
++  position: relative;
++}
++
++.action-btn::after {
++  border: none;
+ }
+ 
+ .action-btn:active {
+-  transform: scale(0.96);
++  transform: scale(0.96) translateY(2rpx);
+   box-shadow: var(--shadow-sm);
+ }
+ 
+@@ -337,9 +397,28 @@
+   background: var(--gradient-accent);
+ }
+ 
+-.action-icon {
+-  font-size: 52rpx;
++.action-icon-wrapper {
++  width: 64rpx;
++  height: 64rpx;
++  background: rgba(255, 255, 255, 0.25);
++  border-radius: 50%;
++  display: flex;
++  align-items: center;
++  justify-content: center;
+   margin-bottom: var(--space-sm);
++  backdrop-filter: blur(10px);
++}
++
++.action-icon-plus {
++  font-size: 40rpx;
++  font-weight: 300;
++  line-height: 1;
++}
++
++.bell-icon {
++  width: 32rpx;
++  height: 32rpx;
++  filter: brightness(0) invert(1);
+ }
+ 
+ /* Guide */
+@@ -367,11 +446,35 @@
+   flex-direction: column;
+   align-items: center;
+   box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.2);
++  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
++}
++
++@keyframes slideUp {
++  from {
++    opacity: 0;
++    transform: translateY(40rpx) scale(0.95);
++  }
++  to {
++    opacity: 1;
++    transform: translateY(0) scale(1);
++  }
+ }
+ 
+-.guide-icon {
+-  font-size: 80rpx;
++.guide-icon-wrapper {
++  width: 120rpx;
++  height: 120rpx;
++  background: linear-gradient(135deg, #059669 0%, #10B981 100%);
++  border-radius: 50%;
++  display: flex;
++  align-items: center;
++  justify-content: center;
+   margin-bottom: 24rpx;
++  box-shadow: 0 8rpx 24rpx rgba(5, 150, 105, 0.35);
++}
++
++.guide-wave {
++  font-size: 56rpx;
++  line-height: 1;
+ }
+ 
+ .guide-title {
+diff --git a/pages/medication/medication.wxml b/pages/medication/medication.wxml
+index 85b8f78..0cfa318 100644
+--- a/pages/medication/medication.wxml
++++ b/pages/medication/medication.wxml
+@@ -1,9 +1,10 @@
+ <view class="page-container">
+-  <!-- 页面头部 -->
+   <view class="page-header">
+     <view class="header-content">
+       <view class="header-title-section">
+-        <text class="header-icon">💊</text>
++        <view class="header-icon-wrapper">
++          <image class="pill-icon" src="/images/icons/pill.svg"></image>
++        </view>
+         <view class="header-text">
+           <text class="header-title">我的药品</text>
+           <text class="header-subtitle">共 {{medications.length}} 种药品</text>
+@@ -17,7 +18,6 @@
+     </view>
+   </view>
+ 
+-  <!-- 药品列表 -->
+   <scroll-view scroll-y class="medication-list" enhanced show-scrollbar="{{false}}">
+     <view wx:if="{{medications.length > 0}}" class="list-content">
+       <view 
+@@ -26,7 +26,6 @@
+         class="medication-card {{index === 0 ? 'first' : ''}}"
+         style="animation: slideInUp 0.3s ease-out {{index * 0.05}}s both;"
+       >
+-        <!-- 卡片左侧：药品图标 -->
+         <view class="card-left">
+           <view class="medicine-icon-wrapper {{item.lowStock ? 'low-stock' : ''}}">
+             <text class="medicine-icon">{{item.name[0] || '药'}}</text>
+@@ -38,7 +37,6 @@
+           </view>
+         </view>
+ 
+-        <!-- 卡片中间：药品信息 -->
+         <view class="card-center" bindtap="editMedication" data-id="{{item._id}}">
+           <view class="info-main">
+             <text class="medicine-name">{{item.name}}</text>
+@@ -59,22 +57,24 @@
+               </view>
+             </view>
+             <view class="date-info" wx:if="{{item.startDate || item.endDate}}">
+-              <text class="date-text" wx:if="{{item.startDate}}">📅 {{item.startDate}}</text>
++              <view class="date-icon-wrapper">
++                <text class="date-dot">●</text>
++              </view>
++              <text class="date-text" wx:if="{{item.startDate}}">{{item.startDate}}</text>
+               <text class="date-separator" wx:if="{{item.startDate && item.endDate}}">至</text>
+               <text class="date-text" wx:if="{{item.endDate}}">{{item.endDate}}</text>
+             </view>
+           </view>
+         </view>
+ 
+-        <!-- 卡片右侧：快捷操作 -->
+         <view class="card-right">
+           <view class="action-group">
+             <view class="action-btn edit-btn" bindtap="editMedication" data-id="{{item._id}}">
+-              <text class="action-icon">✏️</text>
++              <view class="action-icon-edit">✎</view>
+               <text class="action-text">编辑</text>
+             </view>
+             <view class="action-btn delete-btn" catchtap="deleteMedication" data-id="{{item._id}}">
+-              <text class="action-icon">🗑️</text>
++              <view class="action-icon-delete">🗑</view>
+               <text class="action-text">删除</text>
+             </view>
+           </view>
+@@ -82,23 +82,25 @@
+       </view>
+     </view>
+ 
+-    <!-- 空状态 -->
+     <view wx:else class="empty-state">
+       <view class="empty-illustration">
+-        <text class="empty-icon-large">💊</text>
++        <view class="empty-pill-wrapper">
++          <image class="empty-pill-icon" src="/images/icons/pill.svg"></image>
++        </view>
+       </view>
+       <text class="empty-title">暂无药品</text>
+       <text class="empty-desc">点击下方按钮添加您的第一个药品</text>
+       <view class="empty-action">
+         <button class="empty-add-btn" bindtap="addMedication">
+-          <text class="btn-plus">+</text>
++          <view class="btn-plus-wrapper">
++            <text class="btn-plus">+</text>
++          </view>
+           <text class="btn-text">添加药品</text>
+         </button>
+       </view>
+     </view>
+   </scroll-view>
+ 
+-  <!-- 底部添加按钮 -->
+   <view class="bottom-action-bar" wx:if="{{medications.length > 0}}">
+     <button class="fab-button" bindtap="addMedication">
+       <view class="fab-icon-wrap">
+diff --git a/pages/medication/medication.wxss b/pages/medication/medication.wxss
+index 03ee897..78fd923 100644
+--- a/pages/medication/medication.wxss
++++ b/pages/medication/medication.wxss
+@@ -59,9 +59,22 @@
+   gap: 20rpx;
+ }
+ 
+-.header-icon {
+-  font-size: 56rpx;
+-  filter: drop-shadow(0 2rpx 8rpx rgba(0,0,0,0.15));
++.header-icon-wrapper {
++  width: 64rpx;
++  height: 64rpx;
++  background: rgba(255, 255, 255, 0.25);
++  border-radius: 50%;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  flex-shrink: 0;
++  backdrop-filter: blur(10px);
++}
++
++.pill-icon {
++  width: 32rpx;
++  height: 32rpx;
++  filter: brightness(0) invert(1);
+ }
+ 
+ .header-text {
+@@ -394,15 +407,30 @@
+   flex-wrap: wrap;
+ }
+ 
++.date-icon-wrapper {
++  width: 24rpx;
++  height: 24rpx;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  flex-shrink: 0;
++}
++
++.date-dot {
++  font-size: 12rpx;
++  color: var(--color-text-muted);
++  line-height: 1;
++}
++
+ .date-text {
+   font-size: 22rpx;
+-  color: #9CA3AF;
++  color: var(--color-text-muted);
+   font-weight: 500;
+ }
+ 
+ .date-separator {
+   font-size: 22rpx;
+-  color: #D1D5DB;
++  color: var(--color-border);
+ }
+ 
+ /* 卡片右侧：操作按钮 */
+@@ -454,9 +482,11 @@
+   border-color: #FCA5A5;
+ }
+ 
+-.action-icon {
+-  font-size: 32rpx;
++.action-icon-edit,
++.action-icon-delete {
++  font-size: 24rpx;
+   margin-bottom: 4rpx;
++  line-height: 1;
+ }
+ 
+ .action-text {
+@@ -502,16 +532,25 @@
+   animation: float 3s ease-in-out infinite;
+ }
+ 
++.empty-pill-wrapper {
++  width: 80rpx;
++  height: 80rpx;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++}
++
++.empty-pill-icon {
++  width: 48rpx;
++  height: 48rpx;
++  filter: invert(38%) sepia(78%) saturate(745%) hue-rotate(115deg) brightness(97%) contrast(101%);
++}
++
+ @keyframes float {
+   0%, 100% { transform: translateY(0); }
+   50% { transform: translateY(-15rpx); }
+ }
+ 
+-.empty-icon-large {
+-  font-size: 100rpx;
+-  filter: drop-shadow(0 4rpx 12rpx rgba(5, 150, 105, 0.2));
+-}
+-
+ .empty-title {
+   font-size: 38rpx;
+   font-weight: 700;
+@@ -551,6 +590,10 @@
+   transition: all 0.3s ease;
+ }
+ 
++.empty-add-btn::after {
++  border: none;
++}
++
+ .empty-add-btn:active {
+   transform: scale(0.97) translateY(2rpx);
+   box-shadow: 
+@@ -558,9 +601,20 @@
+     0 2rpx 6rpx rgba(5, 150, 105, 0.15);
+ }
+ 
++.btn-plus-wrapper {
++  width: 48rpx;
++  height: 48rpx;
++  background: rgba(255, 255, 255, 0.25);
++  border-radius: 50%;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++}
++
+ .btn-plus {
+-  font-size: 44rpx;
++  font-size: 36rpx;
+   font-weight: 300;
++  line-height: 1;
+ }
+ 
+ .btn-text {
+diff --git a/pages/profile/profile.wxml b/pages/profile/profile.wxml
+index 5af4cf2..50f64bc 100644
+--- a/pages/profile/profile.wxml
++++ b/pages/profile/profile.wxml
+@@ -1,12 +1,11 @@
+ <view class="profile-page">
+-  <!-- 个人资料卡片 -->
+   <view class="card profile-card">
+     <block wx:if="{{!isEditing}}">
+       <view class="user-info">
+         <view class="user-avatar-wrapper">
+           <image wx:if="{{userInfo.avatarUrl}}" class="user-avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+           <view wx:else class="user-avatar-placeholder">
+-            <text class="avatar-placeholder-icon">👤</text>
++            <text class="avatar-placeholder-text">👤</text>
+           </view>
+         </view>
+         <view class="user-detail">
+@@ -23,9 +22,11 @@
+           <button class="edit-avatar-btn" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+             <image wx:if="{{editAvatar}}" class="edit-avatar-img" src="{{editAvatar}}" mode="aspectFill"></image>
+             <view wx:else class="edit-avatar-placeholder">
+-              <text class="avatar-placeholder-icon">👤</text>
++              <text class="avatar-placeholder-text">👤</text>
++            </view>
++            <view class="avatar-camera-wrapper">
++              <text class="avatar-camera-text">📷</text>
+             </view>
+-            <view class="avatar-camera-badge">📷</view>
+           </button>
+         </view>
+         <input class="edit-nick-input" type="nickname" placeholder="输入昵称" value="{{editNickname}}" bindinput="onInputNickname" maxlength="20" />
+@@ -37,7 +38,6 @@
+     </block>
+   </view>
+ 
+-  <!-- 统计数据 -->
+   <view class="card stats-card">
+     <view class="stats">
+       <view class="stat">
+@@ -57,11 +57,12 @@
+     </view>
+   </view>
+ 
+-  <!-- 成就徽章 -->
+   <view class="card achievements-card">
+     <view class="achievements-header">
+       <text class="achievements-title">成就徽章</text>
+-      <text class="achievements-streak">🔥 {{streak}} 天</text>
++      <view class="achievements-streak-wrapper">
++        <text class="achievements-streak-text">🔥 {{streak}} 天</text>
++      </view>
+     </view>
+     <view class="achievements-grid">
+       <view wx:for="{{achievements}}" wx:key="days" class="achievement-item {{item.unlocked ? 'unlocked' : 'locked'}}">
+@@ -74,18 +75,23 @@
+     </view>
+   </view>
+ 
+-  <!-- 菜单 -->
+   <view class="card menu-card">
+     <view class="menu-item" bindtap="goToReminders">
+-      <text class="menu-icon">🔔</text>
++      <view class="menu-icon-wrapper">
++        <image class="menu-icon-svg" src="/images/icons/bell.svg"></image>
++      </view>
+       <view class="menu-content">
+         <text class="menu-title">提醒设置</text>
+         <text class="menu-desc">管理服药提醒时间和频率</text>
+       </view>
+-      <text class="menu-arrow">›</text>
++      <view class="menu-arrow-wrapper">
++        <text class="menu-arrow">›</text>
++      </view>
+     </view>
+     <view class="menu-item" bindtap="triggerSync">
+-      <text class="menu-icon">{{isSyncing ? '⏳' : '🔄'}}</text>
++      <view class="menu-icon-wrapper">
++        <image class="menu-icon-svg" src="/images/icons/refresh.svg"></image>
++      </view>
+       <view class="menu-content">
+         <text class="menu-title">数据同步</text>
+         <text class="menu-desc">{{syncStatusText}}</text>
+@@ -93,21 +99,29 @@
+       <view class="status-dot {{syncOnline ? 'online' : 'offline'}}"></view>
+     </view>
+     <view class="menu-item" bindtap="goToHelp">
+-      <text class="menu-icon">❓</text>
++      <view class="menu-icon-wrapper">
++        <image class="menu-icon-svg" src="/images/icons/help.svg"></image>
++      </view>
+       <view class="menu-content">
+         <text class="menu-title">使用帮助</text>
+         <text class="menu-desc">查看使用指南和常见问题</text>
+       </view>
+-      <text class="menu-arrow">›</text>
++      <view class="menu-arrow-wrapper">
++        <text class="menu-arrow">›</text>
++      </view>
+     </view>
+     <view class="menu-item" bindtap="goToAbout">
+-      <text class="menu-icon">ℹ️</text>
++      <view class="menu-icon-wrapper">
++        <image class="menu-icon-svg" src="/images/icons/info.svg"></image>
++      </view>
+       <view class="menu-content">
+         <text class="menu-title">关于我们</text>
+         <text class="menu-desc">版本信息和开发者致谢</text>
+       </view>
+       <text class="menu-version">v1.0</text>
+-      <text class="menu-arrow">›</text>
++      <view class="menu-arrow-wrapper">
++        <text class="menu-arrow">›</text>
++      </view>
+     </view>
+   </view>
+ 
+diff --git a/pages/profile/profile.wxss b/pages/profile/profile.wxss
+index 70a39b1..1e0bfb0 100644
+--- a/pages/profile/profile.wxss
++++ b/pages/profile/profile.wxss
+@@ -53,9 +53,9 @@ page {
+   justify-content: center;
+ }
+ 
+-.avatar-placeholder-icon {
+-  font-size: 44rpx;
+-  opacity: 0.7;
++.avatar-placeholder-text {
++  font-size: 40rpx;
++  opacity: 0.8;
+   line-height: 1;
+ }
+ 
+@@ -145,12 +145,12 @@ page {
+   justify-content: center;
+ }
+ 
+-.avatar-camera-badge {
++.avatar-camera-wrapper {
+   position: absolute;
+   bottom: 0;
+   right: 0;
+-  width: 36rpx;
+-  height: 36rpx;
++  width: 40rpx;
++  height: 40rpx;
+   background: #FFFFFF;
+   border-radius: 50%;
+   display: flex;
+@@ -158,9 +158,12 @@ page {
+   justify-content: center;
+   box-shadow: 0 2rpx 6rpx rgba(0,0,0,0.2);
+   border: 3rpx solid #059669;
++  z-index: 1;
++}
++
++.avatar-camera-text {
+   font-size: 18rpx;
+   line-height: 1;
+-  z-index: 1;
+ }
+ 
+ .edit-nick-input {
+@@ -274,13 +277,20 @@ page {
+ .achievements-title {
+   font-size: 32rpx;
+   font-weight: 700;
+-  color: #111827;
++  color: var(--color-text-primary);
+ }
+ 
+-.achievements-streak {
+-  font-size: 28rpx;
++.achievements-streak-wrapper {
++  background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
++  padding: 8rpx 16rpx;
++  border-radius: 20rpx;
++  border: 2rpx solid #FED7AA;
++}
++
++.achievements-streak-text {
++  font-size: 24rpx;
+   font-weight: 600;
+-  color: #F59E0B;
++  color: #C2410C;
+ }
+ 
+ .achievements-grid {
+@@ -349,7 +359,8 @@ page {
+   display: flex;
+   align-items: center;
+   padding: 28rpx 32rpx;
+-  border-bottom: 1rpx solid #f5f5f5;
++  border-bottom: 2rpx solid var(--color-border-light);
++  transition: all 0.2s ease;
+ }
+ 
+ .menu-item:last-child {
+@@ -357,12 +368,25 @@ page {
+ }
+ 
+ .menu-item:active {
+-  background: #f9f9f9;
++  background: var(--color-primary-bg);
+ }
+ 
+-.menu-icon {
+-  font-size: 40rpx;
++.menu-icon-wrapper {
++  width: 56rpx;
++  height: 56rpx;
++  background: var(--color-primary-bg);
++  border-radius: 16rpx;
++  display: flex;
++  align-items: center;
++  justify-content: center;
+   margin-right: 20rpx;
++  flex-shrink: 0;
++}
++
++.menu-icon-svg {
++  width: 28rpx;
++  height: 28rpx;
++  filter: invert(38%) sepia(78%) saturate(745%) hue-rotate(115deg) brightness(97%) contrast(101%);
+ }
+ 
+ .menu-content {
+@@ -383,9 +407,19 @@ page {
+   display: block;
+ }
+ 
++.menu-arrow-wrapper {
++  width: 40rpx;
++  height: 40rpx;
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  flex-shrink: 0;
++}
++
+ .menu-arrow {
+-  font-size: 40rpx;
+-  color: #ccc;
++  font-size: 32rpx;
++  color: var(--color-text-muted);
++  line-height: 1;
+ }
+ 
+ .menu-version {
+-- 
+2.43.0
+
