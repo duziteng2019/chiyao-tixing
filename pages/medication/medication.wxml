@@ -1,9 +1,10 @@
 <view class="page-container">
-  <!-- 页面头部 -->
   <view class="page-header">
     <view class="header-content">
       <view class="header-title-section">
-        <text class="header-icon">💊</text>
+        <view class="header-icon-wrapper">
+          <image class="pill-icon" src="/images/icons/pill.svg"></image>
+        </view>
         <view class="header-text">
           <text class="header-title">我的药品</text>
           <text class="header-subtitle">共 {{medications.length}} 种药品</text>
@@ -17,7 +18,6 @@
     </view>
   </view>
 
-  <!-- 药品列表 -->
   <scroll-view scroll-y class="medication-list" enhanced show-scrollbar="{{false}}">
     <view wx:if="{{medications.length > 0}}" class="list-content">
       <view 
@@ -26,7 +26,6 @@
         class="medication-card {{index === 0 ? 'first' : ''}}"
         style="animation: slideInUp 0.3s ease-out {{index * 0.05}}s both;"
       >
-        <!-- 卡片左侧：药品图标 -->
         <view class="card-left">
           <view class="medicine-icon-wrapper {{item.lowStock ? 'low-stock' : ''}}">
             <text class="medicine-icon">{{item.name[0] || '药'}}</text>
@@ -38,7 +37,6 @@
           </view>
         </view>
 
-        <!-- 卡片中间：药品信息 -->
         <view class="card-center" bindtap="editMedication" data-id="{{item._id}}">
           <view class="info-main">
             <text class="medicine-name">{{item.name}}</text>
@@ -59,22 +57,24 @@
               </view>
             </view>
             <view class="date-info" wx:if="{{item.startDate || item.endDate}}">
-              <text class="date-text" wx:if="{{item.startDate}}">📅 {{item.startDate}}</text>
+              <view class="date-icon-wrapper">
+                <text class="date-dot">●</text>
+              </view>
+              <text class="date-text" wx:if="{{item.startDate}}">{{item.startDate}}</text>
               <text class="date-separator" wx:if="{{item.startDate && item.endDate}}">至</text>
               <text class="date-text" wx:if="{{item.endDate}}">{{item.endDate}}</text>
             </view>
           </view>
         </view>
 
-        <!-- 卡片右侧：快捷操作 -->
         <view class="card-right">
           <view class="action-group">
             <view class="action-btn edit-btn" bindtap="editMedication" data-id="{{item._id}}">
-              <text class="action-icon">✏️</text>
+              <view class="action-icon-edit">✎</view>
               <text class="action-text">编辑</text>
             </view>
             <view class="action-btn delete-btn" catchtap="deleteMedication" data-id="{{item._id}}">
-              <text class="action-icon">🗑️</text>
+              <view class="action-icon-delete">🗑</view>
               <text class="action-text">删除</text>
             </view>
           </view>
@@ -82,23 +82,25 @@
       </view>
     </view>
 
-    <!-- 空状态 -->
     <view wx:else class="empty-state">
       <view class="empty-illustration">
-        <text class="empty-icon-large">💊</text>
+        <view class="empty-pill-wrapper">
+          <image class="empty-pill-icon" src="/images/icons/pill.svg"></image>
+        </view>
       </view>
       <text class="empty-title">暂无药品</text>
       <text class="empty-desc">点击下方按钮添加您的第一个药品</text>
       <view class="empty-action">
         <button class="empty-add-btn" bindtap="addMedication">
-          <text class="btn-plus">+</text>
+          <view class="btn-plus-wrapper">
+            <text class="btn-plus">+</text>
+          </view>
           <text class="btn-text">添加药品</text>
         </button>
       </view>
     </view>
   </scroll-view>
 
-  <!-- 底部添加按钮 -->
   <view class="bottom-action-bar" wx:if="{{medications.length > 0}}">
     <button class="fab-button" bindtap="addMedication">
       <view class="fab-icon-wrap">

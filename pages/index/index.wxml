@@ -29,7 +29,10 @@
         </view>
         <view class="reminder-status">
           <button wx:if="{{!item.taken}}" class="btn-take" bindtap="markAsTaken" data-id="{{item.id}}">已服用</button>
-          <text wx:else class="status-taken">已服</text>
+          <view wx:else class="status-taken">
+            <image class="check-icon" src="/images/icons/check.svg"></image>
+            <text>已服</text>
+          </view>
         </view>
       </view>
     </view>
@@ -39,17 +42,23 @@
   </view>
 
   <view class="streak-banner" wx:if="{{stats.streak > 0}}" bindtap="goToMedication">
-    <text class="streak-icon">🔥</text>
+    <view class="streak-icon-wrapper">
+      <text class="streak-flame">🔥</text>
+    </view>
     <view class="streak-info">
       <text class="streak-count">连续服药 {{stats.streak}} 天</text>
       <text class="streak-hint">继续保持！</text>
     </view>
-    <text class="streak-arrow">›</text>
+    <view class="streak-arrow-wrapper">
+      <text class="streak-arrow">›</text>
+    </view>
   </view>
 
   <view class="card stock-warning-card" wx:if="{{lowStockMedications.length > 0}}" bindtap="goToMedication">
     <view class="stock-warning-header">
-      <text class="stock-warning-icon">⚠️</text>
+      <view class="stock-warning-icon-wrapper">
+        <text class="warning-symbol">⚠️</text>
+      </view>
       <text class="stock-warning-title">{{lowStockMedications.length}} 种药品即将用完</text>
     </view>
     <view class="stock-warning-list">
@@ -80,33 +89,38 @@
 
   <view class="quick-actions">
     <button class="action-btn" bindtap="goToAddMedication">
-      <text class="action-icon">+</text>
+      <view class="action-icon-wrapper">
+        <text class="action-icon-plus">+</text>
+      </view>
       <text class="action-btn-text">添加药品</text>
     </button>
     <button class="action-btn action-btn-secondary" bindtap="goToAddReminder">
-      <text class="action-icon">&</text>
+      <view class="action-icon-wrapper">
+        <image class="bell-icon" src="/images/icons/bell.svg"></image>
+      </view>
       <text class="action-btn-text">设置提醒</text>
     </button>
   </view>
   </view>
 
-  <!-- 新手引导 -->
   <view wx:if="{{showGuide}}" class="guide-overlay">
     <view class="guide-card">
-      <view class="guide-icon">👋</view>
+      <view class="guide-icon-wrapper">
+        <text class="guide-wave">👋</text>
+      </view>
       <text class="guide-title">欢迎使用吃药提醒</text>
-      <text class="guide-desc">轻松管理药品信息，设置服药提醒，追踪你的健康数据</text>
+      <text class="guide-desc">轻松管理药品信息，设置服药提醒，追踪您的健康数据</text>
       <view class="guide-steps">
         <view class="guide-step">
-          <text class="guide-step-num">1</text>
+          <view class="guide-step-num">{{1}}</view>
           <text class="guide-step-text">添加你的药品信息</text>
         </view>
         <view class="guide-step">
-          <text class="guide-step-num">2</text>
+          <view class="guide-step-num">{{2}}</view>
           <text class="guide-step-text">为药品设置服药提醒</text>
         </view>
         <view class="guide-step">
-          <text class="guide-step-num">3</text>
+          <view class="guide-step-num">{{3}}</view>
           <text class="guide-step-text">收到提醒，按时服药</text>
         </view>
       </view>

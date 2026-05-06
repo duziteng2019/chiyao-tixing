@@ -59,9 +59,22 @@
   gap: 20rpx;
 }
 
-.header-icon {
-  font-size: 56rpx;
-  filter: drop-shadow(0 2rpx 8rpx rgba(0,0,0,0.15));
+.header-icon-wrapper {
+  width: 64rpx;
+  height: 64rpx;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  backdrop-filter: blur(10px);
+}
+
+.pill-icon {
+  width: 32rpx;
+  height: 32rpx;
+  filter: brightness(0) invert(1);
 }
 
 .header-text {
@@ -394,15 +407,30 @@
   flex-wrap: wrap;
 }
 
+.date-icon-wrapper {
+  width: 24rpx;
+  height: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.date-dot {
+  font-size: 12rpx;
+  color: var(--color-text-muted);
+  line-height: 1;
+}
+
 .date-text {
   font-size: 22rpx;
-  color: #9CA3AF;
+  color: var(--color-text-muted);
   font-weight: 500;
 }
 
 .date-separator {
   font-size: 22rpx;
-  color: #D1D5DB;
+  color: var(--color-border);
 }
 
 /* 卡片右侧：操作按钮 */
@@ -454,9 +482,11 @@
   border-color: #FCA5A5;
 }
 
-.action-icon {
-  font-size: 32rpx;
+.action-icon-edit,
+.action-icon-delete {
+  font-size: 24rpx;
   margin-bottom: 4rpx;
+  line-height: 1;
 }
 
 .action-text {
@@ -502,14 +532,23 @@
   animation: float 3s ease-in-out infinite;
 }
 
+.empty-pill-wrapper {
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-pill-icon {
+  width: 48rpx;
+  height: 48rpx;
+  filter: invert(38%) sepia(78%) saturate(745%) hue-rotate(115deg) brightness(97%) contrast(101%);
+}
+
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-15rpx); }
-}
-
-.empty-icon-large {
-  font-size: 100rpx;
-  filter: drop-shadow(0 4rpx 12rpx rgba(5, 150, 105, 0.2));
 }
 
 .empty-title {
@@ -551,6 +590,10 @@
   transition: all 0.3s ease;
 }
 
+.empty-add-btn::after {
+  border: none;
+}
+
 .empty-add-btn:active {
   transform: scale(0.97) translateY(2rpx);
   box-shadow: 
@@ -558,9 +601,20 @@
     0 2rpx 6rpx rgba(5, 150, 105, 0.15);
 }
 
+.btn-plus-wrapper {
+  width: 48rpx;
+  height: 48rpx;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .btn-plus {
-  font-size: 44rpx;
+  font-size: 36rpx;
   font-weight: 300;
+  line-height: 1;
 }
 
 .btn-text {

@@ -53,9 +53,9 @@ page {
   justify-content: center;
 }
 
-.avatar-placeholder-icon {
-  font-size: 44rpx;
-  opacity: 0.7;
+.avatar-placeholder-text {
+  font-size: 40rpx;
+  opacity: 0.8;
   line-height: 1;
 }
 
@@ -145,12 +145,12 @@ page {
   justify-content: center;
 }
 
-.avatar-camera-badge {
+.avatar-camera-wrapper {
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 36rpx;
-  height: 36rpx;
+  width: 40rpx;
+  height: 40rpx;
   background: #FFFFFF;
   border-radius: 50%;
   display: flex;
@@ -158,9 +158,12 @@ page {
   justify-content: center;
   box-shadow: 0 2rpx 6rpx rgba(0,0,0,0.2);
   border: 3rpx solid #059669;
+  z-index: 1;
+}
+
+.avatar-camera-text {
   font-size: 18rpx;
   line-height: 1;
-  z-index: 1;
 }
 
 .edit-nick-input {
@@ -274,13 +277,20 @@ page {
 .achievements-title {
   font-size: 32rpx;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-text-primary);
 }
 
-.achievements-streak {
-  font-size: 28rpx;
+.achievements-streak-wrapper {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  border: 2rpx solid #FED7AA;
+}
+
+.achievements-streak-text {
+  font-size: 24rpx;
   font-weight: 600;
-  color: #F59E0B;
+  color: #C2410C;
 }
 
 .achievements-grid {
@@ -349,7 +359,8 @@ page {
   display: flex;
   align-items: center;
   padding: 28rpx 32rpx;
-  border-bottom: 1rpx solid #f5f5f5;
+  border-bottom: 2rpx solid var(--color-border-light);
+  transition: all 0.2s ease;
 }
 
 .menu-item:last-child {
@@ -357,12 +368,25 @@ page {
 }
 
 .menu-item:active {
-  background: #f9f9f9;
+  background: var(--color-primary-bg);
 }
 
-.menu-icon {
-  font-size: 40rpx;
+.menu-icon-wrapper {
+  width: 56rpx;
+  height: 56rpx;
+  background: var(--color-primary-bg);
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.menu-icon-svg {
+  width: 28rpx;
+  height: 28rpx;
+  filter: invert(38%) sepia(78%) saturate(745%) hue-rotate(115deg) brightness(97%) contrast(101%);
 }
 
 .menu-content {
@@ -383,9 +407,19 @@ page {
   display: block;
 }
 
+.menu-arrow-wrapper {
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .menu-arrow {
-  font-size: 40rpx;
-  color: #ccc;
+  font-size: 32rpx;
+  color: var(--color-text-muted);
+  line-height: 1;
 }
 
 .menu-version {
