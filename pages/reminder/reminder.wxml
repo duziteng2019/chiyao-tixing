@@ -1,28 +1,100 @@
-<view class="container">
-  <view class="card">
-    <view class="section-title">我的提醒</view>
-    <view wx:if="{{reminders.length > 0}}">
-      <view wx:for="{{reminders}}" wx:key="_id" class="reminder-item">
-        <view class="reminder-info">
-          <view class="reminder-medicine">{{item.medicationName || item.medicineName}}</view>
-          <view class="reminder-detail">{{item.repeatLabel}} {{item.time}}</view>
+<view class="page-container">
+  <view class="page-header">
+    <view class="header-content">
+      <view class="header-title-section">
+        <text class="header-icon">⏰</text>
+        <view class="header-text">
+          <text class="header-title">提醒设置</text>
+          <text class="header-subtitle">共 {{reminders.length}} 个提醒</text>
         </view>
-        <view class="reminder-actions">
-          <switch checked="{{item.enabled}}" bindchange="toggleReminder" data-id="{{item._id}}" />
-          <button class="action-btn-small" bindtap="editReminder" data-id="{{item._id}}">编辑</button>
-          <button class="action-btn-small delete" bindtap="deleteReminder" data-id="{{item._id}}">删除</button>
+      </view>
+      <view class="header-stats" wx:if="{{reminders.length > 0}}">
+        <view class="stat-chip {{enabledCount < reminders.length ? 'warning' : 'normal'}}">
+          <text class="stat-chip-text">{{enabledCount}} 个已启用</text>
         </view>
       </view>
     </view>
-    <view wx:else class="empty-state">
-      <text class="empty-text">暂无提醒设置</text>
-    </view>
   </view>
 
-  <view class="add-btn-container">
-    <button class="add-btn" bindtap="addReminder">
-      <text class="add-icon">+</text>
-      添加提醒
+  <scroll-view scroll-y class="reminder-list" enhanced show-scrollbar="{{false}}">
+    <view wx:if="{{reminders.length > 0}}" class="list-content">
+      <view 
+        wx:for="{{reminders}}" 
+        wx:key="_id" 
+        class="reminder-card {{index === 0 ? 'first' : ''}} {{!item.enabled ? 'disabled' : ''}}"
+        style="animation: slideInUp 0.3s ease-out {{index * 0.05}}s both;"
+      >
+        <view class="card-left">
+          <view class="time-badge {{item.enabled ? '' : 'disabled'}}">
+            <text class="time-text">{{item.time}}</text>
+          </view>
+          <view class="enabled-indicator {{item.enabled ? 'active' : 'inactive'}}">
+            <text class="indicator-dot"></text>
+          </view>
+        </view>
+
+        <view class="card-center" bindtap="editReminder" data-id="{{item._id}}">
+          <view class="info-main">
+            <text class="medicine-name">{{item.medicationName || item.medicineName}}</text>
+            <view class="info-tags">
+              <text class="tag repeat-tag">{{item.repeatLabel}}</text>
+              <text class="tag status-tag {{item.enabled ? 'enabled' : 'disabled'}}">
+                {{item.enabled ? '已启用' : '已暂停'}}
+              </text>
+            </view>
+          </view>
+        </view>
+
+        <view class="card-right">
+          <view class="switch-wrapper">
+            <switch 
+              checked="{{item.enabled}}" 
+              bindchange="toggleReminder" 
+              data-id="{{item._id}}"
+              color="#059669"
+            />
+          </view>
+          <view class="action-group">
+            <view class="action-btn edit-btn" bindtap="editReminder" data-id="{{item._id}}">
+              <text class="action-icon">✏️</text>
+              <text class="action-text">编辑</text>
+            </view>
+            <view class="action-btn delete-btn" catchtap="deleteReminder" data-id="{{item._id}}">
+              <text class="action-icon">🗑️</text>
+              <text class="action-text">删除</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="empty-state">
+      <view class="empty-illustration">
+        <text class="empty-icon-large">⏰</text>
+      </view>
+      <text class="empty-title">暂无提醒</text>
+      <text class="empty-desc">点击下方按钮设置您的第一个服药提醒</text>
+      <view class="empty-action">
+        <button class="empty-add-btn" bindtap="addReminder">
+          <text class="btn-plus">+</text>
+          <text class="btn-text">添加提醒</text>
+        </button>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="bottom-action-bar" wx:if="{{reminders.length > 0}}">
+    <button class="fab-button" bindtap="addReminder">
+      <view class="fab-icon-wrap">
+        <text class="fab-icon">+</text>
+      </view>
+      <text class="fab-text">添加提醒</text>
+    </button>
+  </view>
+
+  <view class="subscribe-bar" wx:if="{{reminders.length > 0}}">
+    <button class="subscribe-btn" bindtap="requestSubscription">
+      <text>🔔 开启推送通知</text>
     </button>
   </view>
 </view>

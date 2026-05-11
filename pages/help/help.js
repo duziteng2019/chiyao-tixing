@@ -27,8 +27,8 @@ Page({
         iconChar: '🔄'
       },
       {
-        title: '订阅消息说明',
-        content: '为确保能收到服药提醒：\n1. 设置提醒时会请求订阅权限\n2. 需要点击"允许"接收消息\n3. 每次订阅可接收多条提醒\n4. 如未收到请检查是否开启通知\n5. 可在设置中重新订阅',
+        title: '通知与提醒机制',
+        content: '本应用通过两种方式帮助您按时服药：\n\n1. 首页提醒中心（推荐）\n打开小程序即可看到今日所有待办提醒\n服药后点击"已服"按钮记录\n\n2. 订阅消息通知（辅助补充）\n标记已服后可开启推送通知\n开启后到点会推送消息提醒\n通知权限需定期续期（微信限制）\n如未收到通知，请在首页手动查看\n\n💡 建议：将小程序添加到"我的小程序"',
         iconChar: '✉️'
       }
     ],
@@ -49,5 +49,12 @@ Page({
       showCancel: false,
       confirmText: '我知道了'
     })
+  },
+
+  restartGuide() {
+    try {
+      wx.setStorageSync('guideDone', false)
+    } catch (e) { /* ignore */ }
+    wx.switchTab({ url: '/pages/index/index' })
   }
 })

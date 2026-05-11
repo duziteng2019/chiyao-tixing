@@ -33,7 +33,7 @@
           </view>
           <view class="stock-indicator" wx:if="{{item.totalQuantity && item.remainingQuantity}}">
             <view class="stock-ring">
-              <view class="stock-progress" style="height: {{(item.remainingQuantity / item.totalQuantity) * 100}}%;"></view>
+              <view class="stock-progress" style="height: {{((item.totalQuantity - item.remainingQuantity) / item.totalQuantity) * 100}}%;"></view>
             </view>
           </view>
         </view>
@@ -45,6 +45,7 @@
             <view class="info-tags">
               <text class="tag dosage-tag">{{item.dosage}}</text>
               <text class="tag frequency-tag">{{item.frequency}}</text>
+              <text wx:if="{{item.instruction}}" class="tag instruction-tag">{{item.instruction}}</text>
             </view>
           </view>
           
@@ -68,15 +69,11 @@
 
         <!-- 卡片右侧：快捷操作 -->
         <view class="card-right">
-          <view class="action-group">
-            <view class="action-btn edit-btn" bindtap="editMedication" data-id="{{item._id}}">
-              <text class="action-icon">✏️</text>
-              <text class="action-text">编辑</text>
-            </view>
-            <view class="action-btn delete-btn" catchtap="deleteMedication" data-id="{{item._id}}">
-              <text class="action-icon">🗑️</text>
-              <text class="action-text">删除</text>
-            </view>
+          <view class="action-btn edit-btn" bindtap="editMedication" data-id="{{item._id}}">
+            <text class="action-icon">✏️</text>
+          </view>
+          <view class="action-btn delete-btn" catchtap="deleteMedication" data-id="{{item._id}}">
+            <text class="action-icon">🗑️</text>
           </view>
         </view>
       </view>

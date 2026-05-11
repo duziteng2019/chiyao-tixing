@@ -170,11 +170,12 @@ Page({
       wx.hideLoading()
       wx.showToast({ title: '保存成功', icon: 'success' })
 
-      // 稍等让用户看到成功提示，再弹出订阅窗口
-      await new Promise(r => setTimeout(r, 500))
+      // 请求订阅消息
       await this.requestSubscribe()
 
-      wx.navigateBack()
+      setTimeout(() => {
+        wx.navigateBack()
+      }, 1500)
     } catch (err) {
       wx.hideLoading()
       wx.showToast({ title: '保存失败', icon: 'none' })
@@ -182,6 +183,12 @@ Page({
   },
 
   async requestSubscribe() {
+    const lastRequest = wx.getStorageSync('lastSubscribeRequest')
+    if (lastRequest) {
+      const daysSince = (Date.now() - lastRequest) / 86400000
+      if (daysSince < 1) return
+    }
+
     try {
       const tmplId = config.SUBSCRIBE_TEMPLATE_ID
 
@@ -192,6 +199,7 @@ Page({
       if (res[tmplId] === 'accept' || res[tmplId] === 'TM') {
         wx.setStorageSync('subscribedReminders', true)
       }
+      wx.setStorageSync('lastSubscribeRequest', Date.now())
     } catch (err) {
       console.log('订阅消息请求失败', err)
     }

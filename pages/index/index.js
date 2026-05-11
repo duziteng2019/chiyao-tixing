@@ -1,5 +1,6 @@
 const app = getApp()
 const util = require('../../utils/util.js')
+const dataService = require('../../services/data-service')
 
 Page({
   data: {
@@ -63,6 +64,8 @@ Page({
     this.loadStreak()
     this.loadStats()
     this.checkFirstTime()
+    const isSubscribed = wx.getStorageSync('subscribedReminders') || false
+    this.setData({ isSubscribed })
   },
 
   checkFirstTime() {
@@ -98,59 +101,65 @@ Page({
     }
   },
 
-  loadFromCloud() {
-    if (!wx.cloud) {
-      this.loadFromLocal()
-      return
-    }
+  async loadFromCloud() {
+    try {
+      const reminders = await dataService.getWithFallback('reminders', 'todayReminders', { enabled: true }, { orderBy: { field: 'time', direction: 'asc' } })
+      const medications = await dataService.getWithFallback('medications', 'medications', {}, { orderBy: { field: 'createTime', direction: 'desc' } })
 
-    const db = wx.cloud.database()
-    
-    Promise.all([
-      db.collection('reminders').where({ enabled: true }).get(),
-      db.collection('medications').get()
-    ])
-      .then(([remindersRes, medRes]) => {
-        const reminders = remindersRes.data || []
-        const medications = medRes.data || []
-        const medMap = {}
-        medications.forEach(med => {
-          medMap[med._id] = med
-        })
+      const medMap = {}
+      medications.forEach(med => {
+        medMap[med._id] = med
+      })
 
-        const todayReminders = reminders.map(r => ({
-          id: r._id,
-          medicineName: r.medicationName || r.medicineName || '未知药品',
-          dosage: medMap[r.medicationId] ? (medMap[r.medicationId].dosage || '') : '',
-          time: r.time || '00:00',
-          taken: false
-        })).sort((a, b) => a.time.localeCompare(b.time))
+      const now = new Date()
+      const currentMinutes = now.getHours() * 60 + now.getMinutes()
 
-        const records = wx.getStorageSync('todayRecords') || {}
-        todayReminders.forEach(r => {
-          if (records[r.id]) {
-            r.taken = true
+      const todayReminders = reminders.map(r => ({
+        id: r._id,
+        medicineName: r.medicationName || r.medicineName || '未知药品',
+        medicationId: r.medicationId,
+        dosage: medMap[r.medicationId] ? (medMap[r.medicationId].dosage || '') : '',
+        instruction: medMap[r.medicationId] ? (medMap[r.medicationId].instruction || '') : '',
+        time: r.time || '00:00',
+        taken: false,
+        isOverdue: false
+      }))
+
+      const records = wx.getStorageSync('todayRecords') || {}
+      todayReminders.forEach(r => {
+        if (records[r.id]) {
+          r.taken = true
+        } else if (r.time) {
+          const [h, m] = r.time.split(':').map(Number)
+          if (!isNaN(h) && !isNaN(m) && (h * 60 + m) < currentMinutes) {
+            r.isOverdue = true
           }
-        })
-
-        this.setData({ todayReminders })
-        wx.setStorageSync('todayReminders', todayReminders)
-
-        this.checkLowStock(medications)
+        }
       })
-      .catch(err => {
-        console.log('云端加载失败:', err)
-        this.loadFromLocal()
-      })
+
+      const pendingCount = todayReminders.filter(r => !r.taken).length
+
+      this.setData({ todayReminders, pendingCount })
+      this.updateTabBarBadge(pendingCount)
+      wx.setStorageSync('todayReminders', todayReminders)
+
+      this.checkLowStock(medications)
+    } catch (err) {
+      console.log('云端加载失败:', err)
+      this.loadFromLocal()
+    }
   },
 
   loadFromLocal() {
     try {
       const reminders = wx.getStorageSync('todayReminders') || []
-      this.setData({ todayReminders: reminders })
+      const pendingCount = reminders.filter(r => !r.taken).length
+      this.setData({ todayReminders: reminders, pendingCount })
+      this.updateTabBarBadge(pendingCount)
     } catch (e) {
       console.log('本地加载失败:', e)
-      this.setData({ todayReminders: [] })
+      this.setData({ todayReminders: [], pendingCount: 0 })
+      this.updateTabBarBadge(0)
     }
 
     this.checkLowStock(wx.getStorageSync('medications') || [])
@@ -216,12 +225,10 @@ Page({
     })
     const today = this.getTodayKey()
     const sorted = [...takenDays].sort().reverse()
-    if (sorted.length === 0 || !sorted.includes(today)) {
-      if (!sorted.includes(today)) {
-        const yesterday = new Date(Date.now() - 86400000)
-        const yesterdayKey = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`
-        if (!sorted.includes(yesterdayKey)) return 0
-      }
+    if (!sorted.includes(today)) {
+      const yesterday = new Date(Date.now() - 86400000)
+      const yesterdayKey = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`
+      if (!sorted.includes(yesterdayKey)) return 0
     }
     let count = 0
     for (const day of sorted) {
@@ -246,11 +253,12 @@ Page({
       const todayReminders = this.data.todayReminders || []
       const takenCount = todayReminders.filter(r => r.taken).length
       const todayCount = todayReminders.length
-      
+
       this.setData({
         stats: {
           todayCount,
           takenCount,
+          hasReminders: todayCount > 0,
           compliance: todayCount > 0 ? Math.round((takenCount / todayCount) * 100) : 0
         }
       })
@@ -297,11 +305,19 @@ Page({
       
       this.saveToCloud(id, reminders)
       this.loadStats()
+      this.requestSubscribeIfNeeded()
       
+      // 显示撤销提示
       wx.showToast({
         title: '已记录',
-        icon: 'success'
+        icon: 'success',
+        duration: 2000
       })
+
+      // 保存原始状态用于撤销
+      this._lastMarkedId = id
+      this._lastReminders = this.data.todayReminders.map(r => ({...r}))
+      this._lastRecords = {...records}
     } catch (err) {
       console.log('markAsTaken error:', err)
       wx.showToast({
@@ -311,30 +327,145 @@ Page({
     }
   },
 
+  undoMarkAsTaken() {
+    if (!this._lastMarkedId) return
+
+    const reminders = (this._lastReminders || []).map(item => {
+      if (item.id === this._lastMarkedId) {
+        return { ...item, taken: false }
+      }
+      return item
+    })
+
+    this.setData({ todayReminders: reminders })
+
+    try {
+      wx.setStorageSync('todayReminders', reminders)
+    } catch (e) {}
+
+    if (this._lastRecords) {
+      delete this._lastRecords[this._lastMarkedId]
+      try {
+        wx.setStorageSync('todayRecords', this._lastRecords)
+      } catch (e) {}
+    }
+
+    this.deleteCloudRecord(this._lastMarkedId)
+    this.loadStats()
+    this._lastMarkedId = null
+    this._lastReminders = null
+    this._lastRecords = null
+  },
+
+  deleteCloudRecord(reminderId) {
+    if (!reminderId || !app.globalData || !app.globalData.cloudReady) return
+
+    const db = wx.cloud.database()
+    db.collection('records').where({ reminderId }).get().then(res => {
+      if (res.data && res.data.length > 0) {
+        app.pushToCloud({
+          type: 'delete',
+          collection: 'records',
+          docId: res.data[0]._id
+        }).catch(() => {})
+      }
+    }).catch(() => {})
+  },
+
   saveToCloud(id, reminders) {
     try {
-      if (!wx.cloud || !app.globalData || !app.globalData.cloudReady || !app.globalData.isOnline) {
-        return
-      }
-
-      const db = wx.cloud.database()
       const reminder = reminders.find(r => r.id === id)
-      
       if (!reminder) return
 
-      db.collection('records').add({
-        data: {
-          reminderId: id,
-          medicineName: reminder.medicineName,
-          status: 'taken',
-          recordTime: new Date(),
-          createTime: new Date()
-        }
+      const recordData = {
+        reminderId: id,
+        medicineName: reminder.medicineName || '未知药品',
+        status: 'taken',
+        recordTime: new Date(),
+        createTime: new Date()
+      }
+
+      app.pushToCloud({
+        type: 'markTaken',
+        collection: 'records',
+        data: recordData
       }).catch(err => {
         console.log('云端保存失败:', err)
       })
+
+      this.deductStock(reminder.medicationId)
     } catch (e) {
       console.log('saveToCloud error:', e)
+    }
+  },
+
+  deductStock(medicationId) {
+    if (!medicationId) return
+
+    try {
+      const medications = wx.getStorageSync('medications') || []
+      const medIndex = medications.findIndex(m => m._id === medicationId || m.id === medicationId)
+      if (medIndex < 0) return
+
+      const med = medications[medIndex]
+      const remaining = Number(med.remainingQuantity) || 0
+      if (remaining <= 0) return
+
+      const newRemaining = remaining - 1
+      medications[medIndex] = { ...med, remainingQuantity: newRemaining }
+      wx.setStorageSync('medications', medications)
+
+      app.pushToCloud({
+        type: 'update',
+        collection: 'medications',
+        docId: medicationId,
+        data: { remainingQuantity: newRemaining, updateTime: new Date() }
+      }).catch(err => {
+        console.log('库存扣减云端同步失败:', err)
+      })
+    } catch (e) {
+      console.log('deductStock error:', e)
+    }
+  },
+
+  updateTabBarBadge(count) {
+    try {
+      if (count > 0) {
+        wx.setTabBarBadge({ index: 0, text: String(Math.min(count, 99)) })
+      } else {
+        wx.removeTabBarBadge({ index: 0 })
+      }
+    } catch (e) { /* tab bar api 在部分页面不可用 */ }
+  },
+
+  requestSubscribeIfNeeded() {
+    try {
+      const lastRequest = wx.getStorageSync('lastSubscribeRequest')
+      if (lastRequest) {
+        const daysSince = (Date.now() - lastRequest) / 86400000
+        if (daysSince < 3) return
+      }
+
+      if (wx.getStorageSync('subscribedReminders')) return
+
+      const config = require('../../utils/config')
+      wx.requestSubscribeMessage({
+        tmplIds: [config.SUBSCRIBE_TEMPLATE_ID],
+        success: (res) => {
+          if (res[config.SUBSCRIBE_TEMPLATE_ID] === 'accept') {
+            wx.setStorageSync('subscribedReminders', true)
+          }
+        },
+        fail: () => {
+          wx.setStorageSync('lastSubscribeRequest', Date.now() + 7 * 86400000)
+          return
+        },
+        complete: () => {
+          wx.setStorageSync('lastSubscribeRequest', Date.now())
+        }
+      })
+    } catch (e) {
+      console.log('requestSubscribeIfNeeded error:', e)
     }
   },
 
@@ -373,5 +504,6 @@ Page({
       title: '吃药提醒 - 守护健康',
       path: '/pages/index/index'
     }
-  }
+  },
+
 })

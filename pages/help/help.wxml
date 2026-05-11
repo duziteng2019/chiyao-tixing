@@ -20,7 +20,10 @@
   </view>
 
   <view class="support-section">
-    <button class="support-btn" bindtap="contactSupport">
+    <button class="support-btn" bindtap="restartGuide">
+      重新查看引导
+    </button>
+    <button class="support-btn secondary" bindtap="contactSupport">
       联系客服
     </button>
   </view>

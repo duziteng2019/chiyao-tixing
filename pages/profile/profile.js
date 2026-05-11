@@ -6,6 +6,7 @@ const ACHIEVEMENTS = [
 ]
 
 const app = getApp()
+const exportService = require('../../services/export-service')
 
 Page({
   data: {
@@ -18,29 +19,77 @@ Page({
     isSyncing: false,
     stats: { todayCount: 0, takenCount: 0, compliance: 0 },
     streak: 0,
-    achievements: ACHIEVEMENTS.map(a => ({ ...a, unlocked: false }))
+    achievements: ACHIEVEMENTS.map(a => ({ ...a, unlocked: false, progress: 0, current: 0, total: a.days, circumference: (2 * Math.PI * 44).toFixed(2), dashOffset: (2 * Math.PI * 44).toFixed(2) }))
   },
 
   onLoad() {
     this.loadProfile()
     this.loadUserStats()
     this.loadAchievements()
+    this.drawProgressRings()
   },
 
   onShow() {
     this.loadProfile()
     this.loadUserStats()
     this.loadAchievements()
+    this.drawProgressRings()
+  },
+
+  drawProgressRings() {
+    const lockedAchievements = this.data.achievements.filter(a => !a.unlocked)
+    if (lockedAchievements.length === 0) return
+
+    lockedAchievements.forEach((item, idx) => {
+      const realIndex = this.data.achievements.findIndex(a => a.days === item.days)
+      const query = wx.createSelectorQuery()
+      query.select(`#progress-ring-${realIndex}`).fields({ node: true, size: true })
+      query.exec((res) => {
+        if (!res || !res[0]) return
+        const canvas = res[0].node
+        const ctx = canvas.getContext('2d')
+        const dpr = wx.getWindowInfo().pixelRatio
+        const width = res[0].width
+        const height = res[0].height
+
+        canvas.width = width * dpr
+        canvas.height = height * dpr
+        ctx.scale(dpr, dpr)
+
+        const centerX = width / 2
+        const centerY = height / 2
+        const radius = 44
+        const lineWidth = 8
+        const progress = item.progress / 100
+
+        // Background circle
+        ctx.beginPath()
+        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI)
+        ctx.strokeStyle = '#E5E7EB'
+        ctx.lineWidth = lineWidth
+        ctx.stroke()
+
+        // Progress circle
+        ctx.beginPath()
+        ctx.arc(centerX, centerY, radius, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * progress)
+        ctx.strokeStyle = item.color
+        ctx.lineWidth = lineWidth
+        ctx.lineCap = 'round'
+        ctx.stroke()
+      })
+    })
   },
 
   loadProfile() {
     try {
       const syncInfo = app.getSyncStatus ? app.getSyncStatus() : { isOnline: true }
       const userInfo = (app.globalData && app.globalData.userInfo) || {}
+      const isSubscribed = wx.getStorageSync('subscribedReminders') || false
       this.setData({
         userInfo,
         syncOnline: syncInfo.isOnline !== false,
-        syncStatusText: this.formatSyncStatus(syncInfo)
+        syncStatusText: this.formatSyncStatus(syncInfo),
+        isSubscribed
       })
     } catch (e) {
       console.error('[Profile] loadProfile error:', e)
@@ -81,10 +130,22 @@ Page({
     try {
       const cached = wx.getStorageSync('medicationStreak')
       const streak = cached ? (cached.streak || 0) : 0
-      const achievements = ACHIEVEMENTS.map(a => ({
-        ...a,
-        unlocked: streak >= a.days
-      }))
+      const circumference = 2 * Math.PI * 44
+      const achievements = ACHIEVEMENTS.map(a => {
+        const unlocked = streak >= a.days
+        const progress = unlocked ? 100 : Math.min((streak / a.days) * 100, 100)
+        const progressInt = Math.round(progress)
+        const dashOffset = circumference * (1 - progressInt / 100)
+        return {
+          ...a,
+          unlocked,
+          progress: progressInt,
+          current: streak,
+          total: a.days,
+          circumference: circumference.toFixed(2),
+          dashOffset: dashOffset.toFixed(2)
+        }
+      })
       this.setData({ streak, achievements })
     } catch (e) {
       console.log('[Profile] loadAchievements error:', e)
@@ -196,11 +257,47 @@ Page({
     wx.navigateTo({ url: '/pages/reminder/reminder' })
   },
 
+  requestSubscription() {
+    const config = require('../../utils/config')
+    wx.requestSubscribeMessage({
+      tmplIds: [config.SUBSCRIBE_TEMPLATE_ID],
+      success: (res) => {
+        if (res[config.SUBSCRIBE_TEMPLATE_ID] === 'accept') {
+          wx.setStorageSync('subscribedReminders', true)
+          this.setData({ isSubscribed: true })
+          wx.showToast({ title: '通知已开启', icon: 'success' })
+        }
+      },
+      fail: () => {
+        wx.showToast({ title: '用户拒绝授权', icon: 'none' })
+      }
+    })
+  },
+
   goToHelp() {
     wx.navigateTo({ url: '/pages/help/help' })
   },
 
   goToAbout() {
     wx.navigateTo({ url: '/pages/about/about' })
+  },
+
+  showExportMenu() {
+    wx.showActionSheet({
+      itemList: ['导出药品清单', '导出服药记录', '完整备份 (JSON)'],
+      success: (res) => {
+        switch (res.tapIndex) {
+          case 0:
+            exportService.exportMedications()
+            break
+          case 1:
+            exportService.exportRecords()
+            break
+          case 2:
+            exportService.exportFullBackup()
+            break
+        }
+      }
+    })
   }
 })

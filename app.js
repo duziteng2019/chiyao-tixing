@@ -1,10 +1,16 @@
+const config = require('./config/env')
+const syncManager = require('./services/sync-manager')
+const dataService = require('./services/data-service')
+const { STORAGE_KEYS } = require('./constants/storage')
+
 App({
   globalData: {
     userInfo: null,
     openid: null,
     isOnline: true,
     lastSyncTime: null,
-    cloudReady: false
+    cloudReady: false,
+    isSyncing: false
   },
 
   onLaunch() {
@@ -14,8 +20,8 @@ App({
     } else {
       try {
         wx.cloud.init({
-          env: 'cloudbase-d5g760x9h5cd4938d',
-          traceUser: false
+          env: config.cloudEnv,
+          traceUser: config.traceUser
         })
         this.globalData.cloudReady = true
       } catch (err) {
@@ -24,12 +30,9 @@ App({
       }
     }
 
+    this.getOpenId()
     this.restoreProfile()
     this.monitorNetwork()
-
-    setTimeout(() => {
-      this.getOpenId()
-    }, 1000)
   },
 
   async getOpenId() {
@@ -40,11 +43,9 @@ App({
 
     try {
       const res = await Promise.race([
-        wx.cloud.callFunction({
-          name: 'login'
-        }),
+        wx.cloud.callFunction({ name: 'login' }),
         new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('timeout')), 5000)
+          setTimeout(() => reject(new Error('timeout')), config.timeout)
         )
       ])
       this.globalData.openid = res.result.openid
@@ -81,28 +82,19 @@ App({
       const usersCollection = db.collection('users')
 
       const { data } = await Promise.race([
-        usersCollection.where({
-          _openid: this.globalData.openid
-        }).get(),
+        usersCollection.where({ _openid: this.globalData.openid }).get(),
         new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('timeout')), 5000)
+          setTimeout(() => reject(new Error('timeout')), config.timeout)
         )
       ])
 
       if (data.length > 0) {
         await usersCollection.doc(data[0]._id).update({
-          data: {
-            ...userInfo,
-            updateTime: new Date()
-          }
+          data: { ...userInfo, updateTime: new Date() }
         })
       } else {
         await usersCollection.add({
-          data: {
-            ...userInfo,
-            createTime: new Date(),
-            updateTime: new Date()
-          }
+          data: { ...userInfo, createTime: new Date(), updateTime: new Date() }
         })
       }
       console.log('用户信息保存到云端成功')
@@ -130,52 +122,44 @@ App({
 
   async autoSync() {
     console.log('网络恢复，开始自动同步...')
-    await this.syncData()
+    try {
+      await this.syncData()
+    } catch (err) {
+      console.error('[App] 自动同步失败', err)
+    }
   },
 
   async syncData() {
-    if (!this.globalData.isOnline || !this.globalData.cloudReady) return
+    if (!this.globalData.isOnline || !this.globalData.cloudReady || this.globalData.isSyncing) return
 
+    this.globalData.isSyncing = true
     try {
-      const db = wx.cloud.database()
-
-      const localMedications = wx.getStorageSync('medications') || []
-      const localReminders = wx.getStorageSync('reminders') || []
-
-      if (localMedications.length > 0) {
-        const { data: cloudMeds } = await Promise.race([
-          db.collection('medications').limit(100).get(),
-          new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('timeout')), 5000)
-          )
-        ])
-        wx.setStorageSync('medications', cloudMeds)
-      }
-
-      if (localReminders.length > 0) {
-        const { data: cloudRem } = await Promise.race([
-          db.collection('reminders').limit(100).get(),
-          new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('timeout')), 5000)
-          )
-        ])
-        wx.setStorageSync('reminders', cloudRem)
-      }
-
+      const results = await syncManager.syncAll()
       this.globalData.lastSyncTime = new Date()
-      wx.setStorageSync('lastSyncTime', this.globalData.lastSyncTime.toISOString())
+      wx.setStorageSync(STORAGE_KEYS.LAST_SYNC_TIME, this.globalData.lastSyncTime.toISOString())
+      dataService.clearAllCache()
 
-      wx.showToast({ title: '同步完成', icon: 'success', duration: 1500 })
+      wx.showToast({ title: `同步完成 (${results.offlineQueue} 条离线操作已同步)`, icon: 'success', duration: 2000 })
+      return results
     } catch (err) {
-      console.log('同步失败（使用本地数据）:', err.message || err)
+      console.error('[App] 同步失败', err.message || err)
+      wx.showToast({ title: '同步失败', icon: 'none' })
+      throw err
+    } finally {
+      this.globalData.isSyncing = false
     }
   },
 
   getSyncStatus() {
     return {
       isOnline: this.globalData.isOnline,
-      lastSyncTime: this.globalData.lastSyncTime || wx.getStorageSync('lastSyncTime') || null
+      isSyncing: this.globalData.isSyncing,
+      lastSyncTime: this.globalData.lastSyncTime || wx.getStorageSync(STORAGE_KEYS.LAST_SYNC_TIME) || null,
+      offlineQueueSize: syncManager.getOfflineQueueSize()
     }
   },
 
+  pushToCloud(operation) {
+    return syncManager.pushToCloud(operation)
+  }
 })

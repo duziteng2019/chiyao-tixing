@@ -23,6 +23,13 @@
     </view>
 
     <view class="form-item">
+      <text class="form-label">服用说明</text>
+      <picker mode="selector" range="{{instructionOptions}}" value="{{instructionOptions.indexOf(form.instruction) < 0 ? 0 : instructionOptions.indexOf(form.instruction)}}" bindchange="onInstructionChange">
+        <view class="picker">{{form.instruction || '不限'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-item">
       <text class="form-label">开始日期</text>
       <picker mode="date" value="{{form.startDate}}" bindchange="onStartDateChange">
         <view class="picker">{{form.startDate || '请选择开始日期'}}</view>

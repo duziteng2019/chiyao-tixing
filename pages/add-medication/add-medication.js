@@ -7,6 +7,7 @@ Page({
       dosage: '',
       frequency: '',
       frequencyIndex: null,
+      instruction: '',
       startDate: '',
       endDate: '',
       totalQuantity: '',
@@ -22,6 +23,15 @@ Page({
       { label: '隔日一次', value: 'every_other_day' },
       { label: '每周一次', value: 'once_weekly' },
       { label: '需要时服用', value: 'as_needed' }
+    ],
+    instructionOptions: [
+      '不限',
+      '饭前服用',
+      '饭后服用',
+      '随餐服用',
+      '空腹服用',
+      '睡前服用',
+      '痛时服用'
     ]
   },
 
@@ -47,15 +57,16 @@ Page({
         throw new Error('数据为空')
       }
 
-      const frequencyIndex = this.data.frequencyOptions.findIndex(
-        option => option.label === data.frequency
-      )
+      const frequencyIndex = data.frequencyIndex != null
+        ? data.frequencyIndex
+        : this.data.frequencyOptions.findIndex(option => option.label === data.frequency)
 
       const formData = {
         name: String(data.name || ''),
         dosage: String(data.dosage || ''),
         frequency: String(data.frequency || ''),
         frequencyIndex: frequencyIndex >= 0 ? frequencyIndex : null,
+        instruction: data.instruction || '',
         startDate: String(data.startDate || ''),
         endDate: String(data.endDate || ''),
         totalQuantity: data.totalQuantity ? String(data.totalQuantity) : '',
@@ -112,6 +123,12 @@ Page({
         'form.frequency': option.label
       })
     }
+  },
+
+  onInstructionChange(e) {
+    const index = parseInt(e.detail.value)
+    const value = this.data.instructionOptions[index] || ''
+    this.setData({ 'form.instruction': value })
   },
 
   onStartDateChange(e) {
@@ -215,6 +232,7 @@ Page({
         dosage: form.dosage.trim(),
         frequency: form.frequency,
         frequencyIndex: form.frequencyIndex,
+        instruction: form.instruction || null,
         startDate: form.startDate || null,
         endDate: form.endDate || null,
         totalQuantity: form.totalQuantity ? parseInt(form.totalQuantity) : null,
@@ -231,7 +249,10 @@ Page({
         })
       } else {
         medicationData.createTime = db.serverDate()
-        medicationData.remainingQuantity = medicationData.totalQuantity
+        medicationData.updateTime = db.serverDate()
+        if (!medicationData.remainingQuantity && medicationData.totalQuantity) {
+          medicationData.remainingQuantity = medicationData.totalQuantity
+        }
         await db.collection('medications').add({
           data: medicationData
         })
