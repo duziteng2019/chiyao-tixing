@@ -1,1 +1,18 @@
-{"name": "medication-reminder-tabbar-icons", "version": "1.0.0", "description": "TabBar图标转换工具 - 将SVG图标转换为微信小程序兼容的PNG格式", "main": "scripts/convert-tabbar-icons.js", "scripts": {"convert:tabbar": "node scripts/convert-tabbar-icons.js", "convert:all": "node scripts/convert-all-icons.js", "optimize": "node scripts/optimize-icons.js"}, "dependencies": {"sharp": "^0.33.0", "fs-extra": "^11.0.0", "chalk": "^4.1.2"}, "devDependencies": {}, "keywords": ["wechat", "miniprogram", "tabbar", "icons", "svg", "png"], "author": "", "license": "MIT"}
+{
+  "name": "chiyao-tixing",
+  "version": "1.0.0",
+  "description": "\u5403\u836f\u63d0\u9192\u5fae\u4fe1\u5c0f\u7a0b\u5e8f - \u836f\u54c1\u7ba1\u7406\u3001\u670d\u836f\u63d0\u9192\u3001\u8bb0\u5f55\u8ffd\u8e2a",
+  "main": "app.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "keywords": [
+    "wechat",
+    "miniprogram",
+    "tabbar",
+    "icons",
+    "svg",
+    "png"
+  ],
+  "author": "",
+  "license": "MIT"
+}
